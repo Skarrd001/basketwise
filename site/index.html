@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en-ZA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BasketWise</title>
+<meta name="description" content="Which supermarket is actually cheapest for your basket once you count the drive? Compare Checkers, Shoprite, Pick n Pay, SPAR and Woolworths.">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>BasketWise</h1>
+    <p class="tag">The cheapest shop <em>including the drive there</em>.</p>
+    <div id="freshness" class="fresh"></div>
+  </div>
+</header>
+
+<main class="wrap grid">
+  <section class="card" id="step-location">
+    <h2><span class="n">1</span> Where are you?</h2>
+    <div class="row">
+      <button id="geo" class="btn primary">Use my location</button>
+      <form id="addr-form" class="addr">
+        <input id="addr" type="search" placeholder="or type a suburb, e.g. Durbanville" autocomplete="off">
+        <button class="btn">Find</button>
+      </form>
+    </div>
+    <div id="map" aria-label="Map: tap to set your location"></div>
+    <p class="hint" id="loc-status">Tap the map to set your location.</p>
+
+    <details class="vehicle">
+      <summary>Travel cost settings</summary>
+      <div class="fields">
+        <label>Petrol price (R/litre)<input id="fuel" type="number" step="0.01" min="0" value="22.50"></label>
+        <label>Car uses (litres/100 km)<input id="cons" type="number" step="0.1" min="0" value="8"></label>
+        <label>Your time is worth (R/hour)<input id="time" type="number" step="10" min="0" value="0"></label>
+        <label>Max distance to a store (km)<input id="maxkm" type="number" step="1" min="1" value="20"></label>
+        <label class="check"><input id="loyalty" type="checkbox" checked> I have the loyalty cards (Xtra Savings, Smart Shopper, SPAR Rewards)</label>
+      </div>
+      <p class="hint">Distance is straight-line × 1.3 for roads, there and back. Check the petrol price against this month's official price.</p>
+    </details>
+  </section>
+
+  <section class="card" id="step-basket">
+    <h2><span class="n">2</span> What's in your basket?</h2>
+    <div class="row">
+      <input id="filter" type="search" placeholder="Filter items…">
+      <button id="preset" class="btn">Monthly family shop</button>
+      <button id="clear" class="btn ghost">Clear</button>
+    </div>
+    <div id="items" class="items"></div>
+  </section>
+
+  <section class="card wide" id="step-results">
+    <h2><span class="n">3</span> Where should you shop?</h2>
+    <div id="results"><p class="hint">Set your location and add items to see results.</p></div>
+  </section>
+
+  <section class="card wide">
+    <h2>Price by item</h2>
+    <div id="breakdown" class="scroll"></div>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>Prices are collected daily from each retailer's public website and may differ from the shelf price in your store. Always check at the till. BasketWise is independent and is not affiliated with or endorsed by any retailer.</p>
+  <p id="coverage"></p>
+  <p>Store locations © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>. <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a> · <a href="about.html">How it works</a></p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

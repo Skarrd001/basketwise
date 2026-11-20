@@ -1,0 +1,7 @@
+{"source":"SAMPLE DATA FOR LOCAL UI TESTING ONLY - not real store locations","count":6,"stores":[
+{"chain":"checkers","name":"Sample Checkers A","lat":-33.8320,"lon":18.6480,"suburb":"Sample suburb"},
+{"chain":"shoprite","name":"Sample Shoprite B","lat":-33.8700,"lon":18.6300,"suburb":"Sample suburb"},
+{"chain":"pnp","name":"Sample Pick n Pay C","lat":-33.8250,"lon":18.6600,"suburb":"Sample suburb"},
+{"chain":"spar","name":"Sample SPAR D","lat":-33.8400,"lon":18.6400,"suburb":"Sample suburb"},
+{"chain":"woolworths","name":"Sample Woolworths E","lat":-33.8350,"lon":18.6550,"suburb":"Sample suburb"},
+{"chain":"checkers","name":"Sample Checkers F","lat":-33.9000,"lon":18.6000,"suburb":"Sample suburb"}]}
