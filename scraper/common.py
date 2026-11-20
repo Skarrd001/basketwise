@@ -27,6 +27,15 @@ HOST_DELAY = {"www.pnp.co.za": 10.0}
 VISIT_WINDOW_UTC = {"www.pnp.co.za": (400, 845)}
 
 
+def in_visit_window(host: str) -> bool:
+    """True if `host` may be crawled now per its robots.txt Visit-time (True when it has none)."""
+    w = VISIT_WINDOW_UTC.get(host)
+    if not w:
+        return True
+    hhmm = int(time.strftime("%H%M", time.gmtime()))
+    return w[0] <= hhmm <= w[1]
+
+
 class Fetcher:
     def __init__(self, respect_robots: bool = True):
         self.s = requests.Session()

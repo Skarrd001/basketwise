@@ -51,6 +51,11 @@ input[type=search], input[type=number] { flex: 1; min-width: 0; padding: 9px 11p
 .qty button { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--line); background: var(--chip); color: var(--ink); font-size: 1rem; cursor: pointer; }
 .qty span { min-width: 20px; text-align: center; font-variant-numeric: tabular-nums; }
 .item.on .nm { font-weight: 600; }
+.modes { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; align-items: center; }
+.seg { border: 1px solid var(--line); border-radius: 10px; padding: 6px 12px; margin: 0; display: flex; gap: 14px; align-items: center; }
+.seg legend { padding: 0 6px; font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.seg label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.seg.check { gap: 8px; }
 .rank { display: grid; gap: 10px; }
 .opt { border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; display: grid; grid-template-columns: 1fr auto; gap: 4px 16px; }
 .opt.best { background: var(--best); border-color: var(--accent); }

@@ -14,8 +14,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from common import Fetcher
-from retailers import (RETAILERS, fetch_pnp, fetch_shoprite_group, fetch_spar_specials,
-                       fetch_woolworths_category, now)
+from retailers import (DELIVERY_FEES, RETAILERS, fetch_pnp, fetch_shoprite_group,
+                       fetch_spar_specials, fetch_woolworths_category, now)
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
@@ -24,7 +24,7 @@ log = logging.getLogger("basketwise")
 RETAILER_NOTES = {
     "checkers": "Online (Sixty60) price, which Checkers states matches in-store. Xtra Savings card deals shown separately.",
     "shoprite": "Online price. Xtra Savings card deals shown separately.",
-    "pnp": "Online price for PnP's default pricing region. Smart Shopper deals shown where published.",
+    "pnp": "Online price for PnP's default pricing region. Smart Shopper deals shown where published. Crawled only 04:00-08:45 UTC per PnP's robots.txt; between runs, prices are carried forward.",
     "woolworths": "Not available: woolworths.co.za blocks automated access. We do not bypass this.",
     "spar": "SPAR stores set their own prices; only published SPAR specials are available.",
 }
@@ -86,14 +86,23 @@ def main() -> int:
     if fetch_woolworths_category(f, "browse/food-south-africa/milk-dairy-eggs/milk"):
         ok["woolworths"] = 1
 
+    # A retailer skipped for its robots.txt visit window (e.g. PnP outside 04:00-08:45 UTC) is
+    # "paused", not broken - carry its last status forward so it doesn't trip the regression alarm.
+    from common import in_visit_window
+    paused = {r for r, meta in RETAILERS.items()
+              if ok[r] == 0 and not in_visit_window(meta["domain"])}
     health = {}
     for r, meta in RETAILERS.items():
         cov = sum(1 for i in items if r in i["prices"] and not i["prices"][r].get("stale"))
+        fresh = sum(1 for i in items if r in i["prices"])  # incl. carried-forward
         status = "ok" if cov >= 0.7 * max(1, len(items)) else ("partial" if cov else "unavailable")
+        if r in paused:
+            status = "paused"  # not crawled this run (robots.txt visit window); prices carried forward
         if r == "spar" and cov:
             status = "specials-only"
         health[r] = {"name": meta["name"], "status": status, "items_priced": cov,
-                     "requests_ok": ok[r], "requests_tried": tried[r], "note": RETAILER_NOTES[r]}
+                     "requests_ok": ok[r], "requests_tried": tried[r], "note": RETAILER_NOTES[r],
+                     "delivery": DELIVERY_FEES.get(r)}
 
     doc = {"generated_at": now(), "item_count": len(items), "retailers": health, "items": items}
     DATA.mkdir(exist_ok=True)

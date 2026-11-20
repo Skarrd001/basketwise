@@ -44,6 +44,11 @@ async function boot() {
   }
   $("loyalty").checked = store.get("loyalty", true);
   $("loyalty").addEventListener("change", () => { store.set("loyalty", $("loyalty").checked); render(); });
+  const savedMode = store.get("mode", "drive");
+  document.querySelectorAll('input[name="mode"]').forEach((el) => {
+    el.checked = el.value === savedMode;
+    el.addEventListener("change", () => { store.set("mode", mode()); render(); });
+  });
   renderFreshness();
   renderItems();
   initMap();
@@ -67,8 +72,10 @@ function renderFreshness() {
   const ago = Math.round((Date.now() - when) / 36e5);
   const chips = [`<span class="chip">Prices updated ${ago < 1 ? "within the hour" : ago < 48 ? ago + "h ago" : when.toLocaleDateString("en-ZA")}</span>`];
   for (const [id, h] of Object.entries(p.retailers)) {
-    const good = h.status === "ok";
-    const label = h.status === "ok" ? `${h.items_priced} items` : h.status === "specials-only" ? "specials only" : "unavailable";
+    const good = h.status === "ok" || h.status === "paused";
+    const label = h.status === "ok" ? `${h.items_priced} items`
+      : h.status === "paused" ? `${h.items_priced || "recent"} items (updating soon)`
+      : h.status === "specials-only" ? "specials only" : "unavailable";
     chips.push(`<span class="chip ${good ? "ok" : "bad"}" title="${esc(h.note)}">${esc(h.name)}: ${label}</span>`);
   }
   $("freshness").innerHTML = chips.join("");
@@ -181,9 +188,22 @@ function tripCost(roadKm) {
 }
 
 /* ------------------------------------------------------------------ pricing */
+function mode() { return document.querySelector('input[name="mode"]:checked')?.value || "drive"; }
+
 function unitPrice(p) {
+  // Loyalty price = the card/multibuy price where we have a clean numeric one (mainly Checkers/Shoprite).
   if ($("loyalty").checked && p.promo_price && p.promo_price < p.price) return { v: p.promo_price, promo: true };
   return { v: p.price, promo: false };
+}
+
+function deliveryFee(chain, goods) {
+  const d = (S.prices.retailers[chain] || {}).delivery || { fee: 40, min_order: 150 };
+  const override = store.get("delivery:" + chain, null);
+  const fee = override !== null ? Number(override) : Number(d.fee || 0);
+  const freeOver = d.free_over ? Number(d.free_over) : null;
+  const effective = freeOver && goods >= freeOver ? 0 : fee;
+  return { fee: effective, listed: fee, min_order: d.min_order || 0, service: d.service,
+           belowMin: goods < (d.min_order || 0) };
 }
 
 function render() {
@@ -205,6 +225,7 @@ function render() {
   const excluded = lines.filter((l) => !common.includes(l));
   const others = chains.filter((c) => !eligible.includes(c) && (!haveStores || near[c]));
 
+  const delivery = mode() === "delivery";
   const opts = [];
   for (const c of eligible) {
     const st = near[c];
@@ -212,12 +233,17 @@ function render() {
     for (const { it, qty } of common) {
       const u = unitPrice(it.prices[c]); total += u.v * qty; if (u.promo) promos++;
     }
-    const road = st ? st.d * ROAD_FACTOR * 2 : 0;
-    const travel = st ? tripCost(road) : 0;
-    opts.push({ kind: "single", chains: [c], stores: st ? [st] : [], goods: total, travel, road, missing: [], promos });
+    if (delivery) {
+      const d = deliveryFee(c, total);
+      opts.push({ kind: "single", chains: [c], stores: st ? [st] : [], goods: total, travel: d.fee,
+                  road: 0, missing: [], promos, delivery: d });
+    } else {
+      const road = st ? st.d * ROAD_FACTOR * 2 : 0;
+      opts.push({ kind: "single", chains: [c], stores: st ? [st] : [], goods: total, travel: st ? tripCost(road) : 0, road, missing: [], promos });
+    }
   }
-  // Two-store split over the same common items: buy each where it's cheaper, home -> A -> B -> home.
-  if (haveStores) {
+  // Two-store split: only for driving (two deliveries = two fees, which almost never wins).
+  if (haveStores && !delivery) {
     for (let i = 0; i < eligible.length; i++) for (let j = i + 1; j < eligible.length; j++) {
       const a = near[eligible[i]], b = near[eligible[j]];
       let goods = 0, inA = 0, inB = 0;
@@ -240,8 +266,11 @@ function render() {
   shown.sort((x, y) => x.total - y.total);
 
   let html = "";
-  if (!S.loc) html += `<p class="hint warn">Set your location in step 1 to include travel costs. Showing basket prices only.</p>`;
-  else if (!S.stores.length) html += `<p class="hint warn">Store locations are still loading on the server. Showing basket prices only.</p>`;
+  const cardOn = $("loyalty").checked;
+  html += `<p class="hint">${delivery ? "🚚 <b>Home delivery</b>: groceries + each store's delivery fee." : "🚗 <b>Drive to store</b>: groceries + fuel there and back."} ` +
+    `Prices shown ${cardOn ? "<b>with</b> loyalty-card specials (Xtra Savings, Smart Shopper)." : "at <b>normal shelf price</b> (no loyalty card)."}</p>`;
+  if (!delivery && !S.loc) html += `<p class="hint warn">Set your location in step 1 to include travel costs. Showing basket prices only.</p>`;
+  else if (!delivery && !S.stores.length) html += `<p class="hint warn">Store locations are still loading on the server. Showing basket prices only.</p>`;
   if (!shown.length) html += `<p class="hint">No nearby chains to compare. Try increasing the max distance in travel settings, or see the per-item table below.</p>`;
   html += `<div class="rank">` + shown.map((o, k) => optCard(o, k === 0, shown[0])).join("") + `</div>`;
   if (excluded.length && eligible.length) {
@@ -262,11 +291,17 @@ function optCard(o, best, top) {
   const names = o.chains.map((c) => `<span class="dot" style="background:${CHAINS[c].color}"></span>${CHAINS[c].name}`).join(" + ");
   const where = o.stores.map((s) => `${esc(s.name || "")}${s.suburb ? ", " + esc(s.suburb) : ""} (${s.d.toFixed(1)} km)`).join(" → ");
   const extra = top && !best ? `<div class="save">+${R(o.total - top.total)}</div>` : best ? `<div class="save">Cheapest</div>` : "<div></div>";
-  const travel = o.stores.length ? `Groceries ${R(o.goods)} + travel ${R(o.travel)} (${o.road.toFixed(0)} km)` : `Groceries only. Set location for travel cost`;
+  let line;
+  if (o.delivery) {
+    line = `Groceries ${R(o.goods)} + ${o.delivery.service || "delivery"} ${o.delivery.fee === 0 ? "free" : R(o.delivery.fee)}`;
+    if (o.delivery.belowMin) line += `<br><span class="warn">Below ${R(o.delivery.min_order)} minimum order — add more or pay a surcharge.</span>`;
+  } else {
+    line = o.stores.length ? `Groceries ${R(o.goods)} + travel ${R(o.travel)} (${o.road.toFixed(0)} km round trip)` : `Groceries only. Set location for travel cost`;
+  }
   return `<div class="opt ${best ? "best" : ""}">
     <div class="title">${names} ${best ? '<span class="badge">Best</span>' : ""} ${o.kind === "split" ? '<span class="chip">Split shop</span>' : ""}</div>
     <div class="total">${R(o.total)}</div>
-    <div class="sub">${travel}${where ? "<br>" + where : ""}${o.split ? `<br>${o.split[0]} items at ${CHAINS[o.chains[0]].name}, ${o.split[1]} at ${CHAINS[o.chains[1]].name}` : ""}${o.missing.length ? `<br><span class="warn">Missing: ${o.missing.map(esc).join(", ")}</span>` : ""}</div>
+    <div class="sub">${line}${where && !o.delivery ? "<br>" + where : ""}${o.split ? `<br>${o.split[0]} items at ${CHAINS[o.chains[0]].name}, ${o.split[1]} at ${CHAINS[o.chains[1]].name}` : ""}</div>
     ${extra}
   </div>`;
 }

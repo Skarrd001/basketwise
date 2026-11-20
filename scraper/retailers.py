@@ -25,6 +25,17 @@ def now() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
+# Home-delivery fees, captured live where a site exposes them, else sensible editable defaults (ZAR).
+# The app lets the shopper override these. "free_over" = order value above which delivery is free.
+DELIVERY_FEES: dict[str, dict] = {
+    "checkers": {"service": "Sixty60", "fee": 37, "min_order": 150, "free_over": None},
+    "shoprite": {"service": "Sixty60/Checkers", "fee": 37, "min_order": 150, "free_over": None},
+    "pnp": {"service": "PnP asap!/online", "fee": 35, "min_order": 150, "free_over": None},
+    "woolworths": {"service": "Woolies Dash", "fee": 35, "min_order": 250, "free_over": None},
+    "spar": {"service": "SPAR2U", "fee": 40, "min_order": 150, "free_over": None},
+}
+
+
 # ---------------------------------------------------------------- Checkers / Shoprite (same platform)
 def fetch_shoprite_group(f: Fetcher, retailer: str, product_path: str) -> dict | None:
     url = f"https://{RETAILERS[retailer]['domain']}/product/{product_path}"
@@ -32,7 +43,13 @@ def fetch_shoprite_group(f: Fetcher, retailer: str, product_path: str) -> dict |
     if not r:
         return None
     data = extract_json_script(r.text, "__NEXT_DATA__")
-    p = (data or {}).get("props", {}).get("pageProps", {}).get("serverProduct")
+    pp = (data or {}).get("props", {}).get("pageProps", {})
+    # Opportunistically capture live delivery fees (same on every page); run.py reads this.
+    fees = pp.get("serverDeliveryFees") or {}
+    sixty = fees.get("sixty-min-delivery") or fees.get("one-day-delivery")
+    if sixty and sixty.get("deliveryFee") is not None:
+        DELIVERY_FEES[retailer].update(fee=sixty["deliveryFee"], min_order=sixty.get("minimumOrderValue"))
+    p = pp.get("serverProduct")
     # price 0 = not ranged/sold online at the site's default store: treat as unavailable, never as R0
     if not p or not p.get("price") or float(p["price"]) <= 0:
         return None

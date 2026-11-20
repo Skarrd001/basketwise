@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-20T08:44:26+00:00",
+ "generated_at": "2026-11-20T10:11:46+00:00",
  "item_count": 38,
  "retailers": {
   "checkers": {
@@ -8,7 +8,13 @@
    "items_priced": 33,
    "requests_ok": 33,
    "requests_tried": 33,
-   "note": "Online (Sixty60) price, which Checkers states matches in-store. Xtra Savings card deals shown separately."
+   "note": "Online (Sixty60) price, which Checkers states matches in-store. Xtra Savings card deals shown separately.",
+   "delivery": {
+    "service": "Sixty60",
+    "fee": 37,
+    "min_order": 150,
+    "free_over": null
+   }
   },
   "shoprite": {
    "name": "Shoprite",
@@ -16,15 +22,27 @@
    "items_priced": 32,
    "requests_ok": 32,
    "requests_tried": 32,
-   "note": "Online price. Xtra Savings card deals shown separately."
+   "note": "Online price. Xtra Savings card deals shown separately.",
+   "delivery": {
+    "service": "Sixty60/Checkers",
+    "fee": 37,
+    "min_order": 150,
+    "free_over": null
+   }
   },
   "pnp": {
    "name": "Pick n Pay",
-   "status": "ok",
-   "items_priced": 34,
-   "requests_ok": 34,
+   "status": "paused",
+   "items_priced": 0,
+   "requests_ok": 0,
    "requests_tried": 34,
-   "note": "Online price for PnP's default pricing region. Smart Shopper deals shown where published."
+   "note": "Online price for PnP's default pricing region. Smart Shopper deals shown where published. Crawled only 04:00-08:45 UTC per PnP's robots.txt; between runs, prices are carried forward.",
+   "delivery": {
+    "service": "PnP asap!/online",
+    "fee": 35,
+    "min_order": 150,
+    "free_over": null
+   }
   },
   "woolworths": {
    "name": "Woolworths",
@@ -32,7 +50,13 @@
    "items_priced": 0,
    "requests_ok": 0,
    "requests_tried": 1,
-   "note": "Not available: woolworths.co.za blocks automated access. We do not bypass this."
+   "note": "Not available: woolworths.co.za blocks automated access. We do not bypass this.",
+   "delivery": {
+    "service": "Woolies Dash",
+    "fee": 35,
+    "min_order": 250,
+    "free_over": null
+   }
   },
   "spar": {
    "name": "SPAR",
@@ -40,7 +64,13 @@
    "items_priced": 0,
    "requests_ok": 0,
    "requests_tried": 0,
-   "note": "SPAR stores set their own prices; only published SPAR specials are available."
+   "note": "SPAR stores set their own prices; only published SPAR specials are available.",
+   "delivery": {
+    "service": "SPAR2U",
+    "fee": 40,
+    "min_order": 150,
+    "free_over": null
+   }
   }
  },
  "items": [
@@ -60,7 +90,7 @@
      "url": "https://www.checkers.co.za/product/clover-fresh-full-cream-milk-2l-10136729EA",
      "region": "national-online",
      "name": "Clover Fresh Full Cream Milk 2L",
-     "fetched_at": "2026-11-20T08:37:46+00:00"
+     "fetched_at": "2026-11-20T10:08:54+00:00"
     },
     "shoprite": {
      "price": 37.99,
@@ -71,7 +101,7 @@
      "url": "https://www.shoprite.co.za/product/clover-fresh-full-cream-milk-2l-10136729EA",
      "region": "national-online",
      "name": "Clover Fresh Full Cream Milk 2L",
-     "fetched_at": "2026-11-20T08:37:46+00:00"
+     "fetched_at": "2026-11-20T10:08:55+00:00"
     },
     "pnp": {
      "price": 29.99,
@@ -81,7 +111,8 @@
      "url": "https://www.pnp.co.za/clover-full-cream-milk-fresh-2l/p/000000000000203686_EA",
      "region": "store:WC21",
      "name": "Clover Full Cream Milk Fresh 2L",
-     "fetched_at": "2026-11-20T08:37:47+00:00"
+     "fetched_at": "2026-11-20T08:37:47+00:00",
+     "stale": true
     }
    }
   },
@@ -99,7 +130,7 @@
      "url": "https://www.checkers.co.za/product/parmalat-everfresh-uht-full-cream-milk-1l-10149691EA",
      "region": "national-online",
      "name": "Parmalat Everfresh UHT Full Cream Milk 1L",
-     "fetched_at": "2026-11-20T08:37:49+00:00"
+     "fetched_at": "2026-11-20T10:08:58+00:00"
     },
     "shoprite": {
      "price": 22.99,
@@ -110,7 +141,7 @@
      "url": "https://www.shoprite.co.za/product/parmalat-everfresh-uht-full-cream-milk-1l-10149691EA",
      "region": "national-online",
      "name": "Parmalat Everfresh UHT Full Cream Milk 1L",
-     "fetched_at": "2026-11-20T08:37:50+00:00"
+     "fetched_at": "2026-11-20T10:08:59+00:00"
     },
     "pnp": {
      "price": 22.99,
@@ -119,7 +150,8 @@
      "url": "https://www.pnp.co.za/parmalat-everfresh-full-cream-long-life-milk-1l/p/000000000000190093_EA",
      "region": "store:WC21",
      "name": "Parmalat Everfresh Full Cream Long Life Milk 1L",
-     "fetched_at": "2026-11-20T08:37:57+00:00"
+     "fetched_at": "2026-11-20T08:37:57+00:00",
+     "stale": true
     }
    }
   },
@@ -137,7 +169,7 @@
      "url": "https://www.checkers.co.za/product/nulaid-large-eggs-18-pack-10125869EA",
      "region": "national-online",
      "name": "Nulaid Large Eggs 18 Pack",
-     "fetched_at": "2026-11-20T08:37:58+00:00"
+     "fetched_at": "2026-11-20T10:09:01+00:00"
     }
    }
   },
@@ -156,7 +188,7 @@
      "url": "https://www.checkers.co.za/product/clover-mooi-river-salted-butter-500g-10148865EA",
      "region": "national-online",
      "name": "Clover Mooi River Salted Butter 500g",
-     "fetched_at": "2026-11-20T08:38:01+00:00"
+     "fetched_at": "2026-11-20T10:09:04+00:00"
     }
    }
   },
@@ -175,7 +207,7 @@
      "url": "https://www.checkers.co.za/product/clover-full-cream-cheddar-cheese-800g-10392454EA",
      "region": "national-online",
      "name": "Clover Full Cream Cheddar Cheese 800g",
-     "fetched_at": "2026-11-20T08:38:04+00:00"
+     "fetched_at": "2026-11-20T10:09:07+00:00"
     },
     "pnp": {
      "price": 154.99,
@@ -184,7 +216,8 @@
      "url": "https://www.pnp.co.za/clover-cheddar-cheese-800g/p/000000000000541732_EA",
      "region": "store:WC21",
      "name": "Clover Cheddar Cheese 800g",
-     "fetched_at": "2026-11-20T08:38:08+00:00"
+     "fetched_at": "2026-11-20T08:38:08+00:00",
+     "stale": true
     }
    }
   },
@@ -202,7 +235,7 @@
      "url": "https://www.checkers.co.za/product/danone-ultra-mel-vanilla-flavoured-custard-1kg-10928017EA",
      "region": "national-online",
      "name": "Danone Ultra Mel Vanilla Flavoured Custard 1kg",
-     "fetched_at": "2026-11-20T08:38:08+00:00"
+     "fetched_at": "2026-11-20T10:09:11+00:00"
     },
     "shoprite": {
      "price": 39.99,
@@ -211,7 +244,7 @@
      "url": "https://www.shoprite.co.za/product/danone-ultra-mel-vanilla-flavoured-custard-1kg-10928017EA",
      "region": "national-online",
      "name": "Danone Ultra Mel Vanilla Flavoured Custard 1kg",
-     "fetched_at": "2026-11-20T08:38:08+00:00"
+     "fetched_at": "2026-11-20T10:09:11+00:00"
     },
     "pnp": {
      "price": 39.99,
@@ -221,7 +254,8 @@
      "url": "https://www.pnp.co.za/danone-ultra-mel-vanilla-flavoured-custard-1kg/p/000000000000999658_EA",
      "region": "store:WC21",
      "name": "Danone Ultra Mel Vanilla Flavoured Custard 1kg",
-     "fetched_at": "2026-11-20T08:38:18+00:00"
+     "fetched_at": "2026-11-20T08:38:18+00:00",
+     "stale": true
     }
    }
   },
@@ -239,7 +273,7 @@
      "url": "https://www.checkers.co.za/product/albany-superior-brown-bread-700g-10136298EA",
      "region": "national-online",
      "name": "Albany Superior Brown Bread 700g",
-     "fetched_at": "2026-11-20T08:38:18+00:00"
+     "fetched_at": "2026-11-20T10:09:14+00:00"
     },
     "shoprite": {
      "price": 16.99,
@@ -248,7 +282,7 @@
      "url": "https://www.shoprite.co.za/product/albany-superior-brown-bread-700g-10136298EA",
      "region": "national-online",
      "name": "Albany Superior Brown Bread 700g",
-     "fetched_at": "2026-11-20T08:38:19+00:00"
+     "fetched_at": "2026-11-20T10:09:14+00:00"
     },
     "pnp": {
      "price": 16.99,
@@ -257,7 +291,8 @@
      "url": "https://www.pnp.co.za/albany-superior-sliced-brown-bread-700g/p/000000000000251231_EA",
      "region": "store:WC21",
      "name": "Albany Superior Sliced Brown Bread 700g",
-     "fetched_at": "2026-11-20T08:38:28+00:00"
+     "fetched_at": "2026-11-20T08:38:28+00:00",
+     "stale": true
     }
    }
   },
@@ -275,7 +310,7 @@
      "url": "https://www.checkers.co.za/product/albany-superior-white-bread-700g-10136301EA",
      "region": "national-online",
      "name": "Albany Superior White Bread 700g",
-     "fetched_at": "2026-11-20T08:38:28+00:00"
+     "fetched_at": "2026-11-20T10:09:17+00:00"
     },
     "shoprite": {
      "price": 18.99,
@@ -284,7 +319,7 @@
      "url": "https://www.shoprite.co.za/product/albany-superior-white-bread-700g-10136301EA",
      "region": "national-online",
      "name": "Albany Superior White Bread 700g",
-     "fetched_at": "2026-11-20T08:38:29+00:00"
+     "fetched_at": "2026-11-20T10:09:17+00:00"
     },
     "pnp": {
      "price": 17.99,
@@ -293,7 +328,8 @@
      "url": "https://www.pnp.co.za/albany-superior-white-sliced-bread-700g/p/000000000000129009_EA",
      "region": "store:WC21",
      "name": "Albany Superior White Sliced Bread 700g",
-     "fetched_at": "2026-11-20T08:38:38+00:00"
+     "fetched_at": "2026-11-20T08:38:38+00:00",
+     "stale": true
     }
    }
   },
@@ -313,7 +349,7 @@
      "url": "https://www.shoprite.co.za/product/white-star-super-maize-meal-10kg-10157677EA",
      "region": "national-online",
      "name": "White Star Super Maize Meal 10kg",
-     "fetched_at": "2026-11-20T08:38:38+00:00"
+     "fetched_at": "2026-11-20T10:09:20+00:00"
     },
     "pnp": {
      "price": 123.99,
@@ -322,7 +358,8 @@
      "url": "https://www.pnp.co.za/white-star-super-maize-meal-10kg/p/000000000000183988_EA",
      "region": "store:WC21",
      "name": "White Star Super Maize Meal 10kg",
-     "fetched_at": "2026-11-20T08:38:48+00:00"
+     "fetched_at": "2026-11-20T08:38:48+00:00",
+     "stale": true
     }
    }
   },
@@ -340,7 +377,7 @@
      "url": "https://www.checkers.co.za/product/white-star-super-maize-meal-5kg-10703439EA",
      "region": "national-online",
      "name": "White Star Super Maize Meal 5kg",
-     "fetched_at": "2026-11-20T08:38:48+00:00"
+     "fetched_at": "2026-11-20T10:09:21+00:00"
     },
     "shoprite": {
      "price": 79.99,
@@ -350,7 +387,7 @@
      "url": "https://www.shoprite.co.za/product/white-star-super-maize-meal-5kg-10703439EA",
      "region": "national-online",
      "name": "White Star Super Maize Meal 5kg",
-     "fetched_at": "2026-11-20T08:38:49+00:00"
+     "fetched_at": "2026-11-20T10:09:24+00:00"
     },
     "pnp": {
      "price": 74.99,
@@ -359,7 +396,8 @@
      "url": "https://www.pnp.co.za/white-star-super-maize-meal-5kg/p/000000000000794680_EA",
      "region": "store:WC21",
      "name": "White Star Super Maize Meal 5kg",
-     "fetched_at": "2026-11-20T08:38:58+00:00"
+     "fetched_at": "2026-11-20T08:38:58+00:00",
+     "stale": true
     }
    }
   },
@@ -378,7 +416,7 @@
      "url": "https://www.checkers.co.za/product/tastic-long-grain-parboiled-white-rice-2kg-10130258EA",
      "region": "national-online",
      "name": "Tastic Long Grain Parboiled White Rice 2kg",
-     "fetched_at": "2026-11-20T08:38:59+00:00"
+     "fetched_at": "2026-11-20T10:09:24+00:00"
     },
     "shoprite": {
      "price": 44.99,
@@ -389,7 +427,7 @@
      "url": "https://www.shoprite.co.za/product/tastic-long-grain-parboiled-white-rice-2kg-10130258EA",
      "region": "national-online",
      "name": "Tastic Long Grain Parboiled White Rice 2kg",
-     "fetched_at": "2026-11-20T08:38:59+00:00"
+     "fetched_at": "2026-11-20T10:09:27+00:00"
     },
     "pnp": {
      "price": 44.99,
@@ -399,7 +437,8 @@
      "url": "https://www.pnp.co.za/tastic-rice-2kg/p/000000000000195758_EA",
      "region": "store:WC21",
      "name": "Tastic Rice 2kg",
-     "fetched_at": "2026-11-20T08:39:09+00:00"
+     "fetched_at": "2026-11-20T08:39:09+00:00",
+     "stale": true
     }
    }
   },
@@ -417,7 +456,7 @@
      "url": "https://www.shoprite.co.za/product/selati-white-sugar-5kg-10141899EA",
      "region": "national-online",
      "name": "Selati White Sugar 5kg",
-     "fetched_at": "2026-11-20T08:39:09+00:00"
+     "fetched_at": "2026-11-20T10:09:30+00:00"
     },
     "pnp": {
      "price": 148.99,
@@ -426,7 +465,8 @@
      "url": "https://www.pnp.co.za/selati-white-sugar-5kg/p/000000000000184846_EA",
      "region": "store:WC21",
      "name": "Selati White Sugar 5kg",
-     "fetched_at": "2026-11-20T08:39:19+00:00"
+     "fetched_at": "2026-11-20T08:39:19+00:00",
+     "stale": true
     }
    }
   },
@@ -444,7 +484,7 @@
      "url": "https://www.checkers.co.za/product/huletts-sunsweet-brown-sugar-2kg-10725085EA",
      "region": "national-online",
      "name": "Huletts SunSweet Brown Sugar 2kg",
-     "fetched_at": "2026-11-20T08:39:19+00:00"
+     "fetched_at": "2026-11-20T10:09:31+00:00"
     },
     "shoprite": {
      "price": 47.99,
@@ -454,7 +494,7 @@
      "url": "https://www.shoprite.co.za/product/huletts-sunsweet-brown-sugar-2kg-10725085EA",
      "region": "national-online",
      "name": "Huletts SunSweet Brown Sugar 2kg",
-     "fetched_at": "2026-11-20T08:39:19+00:00"
+     "fetched_at": "2026-11-20T10:09:34+00:00"
     },
     "pnp": {
      "price": 65.99,
@@ -463,7 +503,8 @@
      "url": "https://www.pnp.co.za/huletts-sunsweet-brown-sugar-2kg/p/000000000000827169_EA",
      "region": "store:WC21",
      "name": "Huletts Sunsweet Brown Sugar 2kg",
-     "fetched_at": "2026-11-20T08:39:29+00:00"
+     "fetched_at": "2026-11-20T08:39:29+00:00",
+     "stale": true
     }
    }
   },
@@ -481,7 +522,7 @@
      "url": "https://www.checkers.co.za/product/snowflake-cake-wheat-flour-25kg-10136836EA",
      "region": "national-online",
      "name": "Snowflake Cake Wheat Flour 2.5kg",
-     "fetched_at": "2026-11-20T08:39:29+00:00"
+     "fetched_at": "2026-11-20T10:09:34+00:00"
     },
     "shoprite": {
      "price": 41.99,
@@ -492,7 +533,7 @@
      "url": "https://www.shoprite.co.za/product/snowflake-cake-wheat-flour-25kg-10136836EA",
      "region": "national-online",
      "name": "Snowflake Cake Wheat Flour 2.5kg",
-     "fetched_at": "2026-11-20T08:39:30+00:00"
+     "fetched_at": "2026-11-20T10:09:37+00:00"
     },
     "pnp": {
      "price": 41.99,
@@ -501,7 +542,8 @@
      "url": "https://www.pnp.co.za/snowflake-cake-flour-2-5kg/p/000000000000126710_EA",
      "region": "store:WC21",
      "name": "Snowflake Cake Flour 2.5kg",
-     "fetched_at": "2026-11-20T08:39:39+00:00"
+     "fetched_at": "2026-11-20T08:39:39+00:00",
+     "stale": true
     }
    }
   },
@@ -519,7 +561,7 @@
      "url": "https://www.checkers.co.za/product/sunfoil-pure-sunflower-seed-oil-2l-10130959EA",
      "region": "national-online",
      "name": "Sunfoil Pure Sunflower Seed Oil 2L",
-     "fetched_at": "2026-11-20T08:39:40+00:00"
+     "fetched_at": "2026-11-20T10:09:37+00:00"
     },
     "shoprite": {
      "price": 94.99,
@@ -529,7 +571,7 @@
      "url": "https://www.shoprite.co.za/product/sunfoil-pure-sunflower-seed-oil-2l-10130959EA",
      "region": "national-online",
      "name": "Sunfoil Pure Sunflower Seed Oil 2L",
-     "fetched_at": "2026-11-20T08:39:40+00:00"
+     "fetched_at": "2026-11-20T10:09:40+00:00"
     },
     "pnp": {
      "price": 84.99,
@@ -538,7 +580,8 @@
      "url": "https://www.pnp.co.za/sunfoil-sunflower-oil-2l/p/000000000000173946_EA",
      "region": "store:WC21",
      "name": "Sunfoil Sunflower Oil 2L",
-     "fetched_at": "2026-11-20T08:39:49+00:00"
+     "fetched_at": "2026-11-20T08:39:49+00:00",
+     "stale": true
     }
    }
   },
@@ -557,7 +600,7 @@
      "url": "https://www.checkers.co.za/product/fattis-and-monis-spaghetti-pasta-500g-10125342EA",
      "region": "national-online",
      "name": "Fatti's & Moni's Spaghetti Pasta 500g",
-     "fetched_at": "2026-11-20T08:39:50+00:00"
+     "fetched_at": "2026-11-20T10:09:40+00:00"
     },
     "shoprite": {
      "price": 19.99,
@@ -566,7 +609,7 @@
      "url": "https://www.shoprite.co.za/product/fattis-and-monis-spaghetti-pasta-500g-10125342EA",
      "region": "national-online",
      "name": "Fatti's & Moni's Spaghetti Pasta 500g",
-     "fetched_at": "2026-11-20T08:39:50+00:00"
+     "fetched_at": "2026-11-20T10:09:43+00:00"
     },
     "pnp": {
      "price": 19.99,
@@ -576,7 +619,8 @@
      "url": "https://www.pnp.co.za/fatti-s-moni-s-spaghetti-500g/p/000000000000370498_EA",
      "region": "store:WC21",
      "name": "Fatti's & Moni's Spaghetti 500g",
-     "fetched_at": "2026-11-20T08:40:00+00:00"
+     "fetched_at": "2026-11-20T08:40:00+00:00",
+     "stale": true
     }
    }
   },
@@ -594,7 +638,7 @@
      "url": "https://www.checkers.co.za/product/koo-baked-beans-in-tomato-sauce-400g-10126789EA",
      "region": "national-online",
      "name": "KOO Baked Beans in Tomato Sauce 400g",
-     "fetched_at": "2026-11-20T08:40:00+00:00"
+     "fetched_at": "2026-11-20T10:09:44+00:00"
     },
     "shoprite": {
      "price": 15.99,
@@ -604,7 +648,7 @@
      "url": "https://www.shoprite.co.za/product/koo-baked-beans-in-tomato-sauce-400g-10126789EA",
      "region": "national-online",
      "name": "KOO Baked Beans in Tomato Sauce 400g",
-     "fetched_at": "2026-11-20T08:40:01+00:00"
+     "fetched_at": "2026-11-20T10:09:46+00:00"
     },
     "pnp": {
      "price": 16.99,
@@ -614,7 +658,8 @@
      "url": "https://www.pnp.co.za/koo-baked-beans-in-tomato-sauce-400g/p/000000000000967788_EA",
      "region": "store:WC21",
      "name": "Koo Baked Beans In Tomato Sauce 400g",
-     "fetched_at": "2026-11-20T08:40:10+00:00"
+     "fetched_at": "2026-11-20T08:40:10+00:00",
+     "stale": true
     }
    }
   },
@@ -632,7 +677,7 @@
      "url": "https://www.shoprite.co.za/product/lucky-star-pilchards-in-tomato-sauce-400g-10185083EA",
      "region": "national-online",
      "name": "Lucky Star Pilchards in Tomato Sauce 400g",
-     "fetched_at": "2026-11-20T08:40:10+00:00"
+     "fetched_at": "2026-11-20T10:09:50+00:00"
     },
     "pnp": {
      "price": 31.99,
@@ -641,7 +686,8 @@
      "url": "https://www.pnp.co.za/lucky-star-pilchards-in-tomato-sauce-400g/p/000000000000356313_EA",
      "region": "store:WC21",
      "name": "Lucky Star Pilchards in Tomato Sauce 400g",
-     "fetched_at": "2026-11-20T08:40:20+00:00"
+     "fetched_at": "2026-11-20T08:40:20+00:00",
+     "stale": true
     }
    }
   },
@@ -661,7 +707,7 @@
      "url": "https://www.checkers.co.za/product/black-cat-smooth-peanut-butter-400g-10140549EA",
      "region": "national-online",
      "name": "Black Cat Smooth Peanut Butter 400g",
-     "fetched_at": "2026-11-20T08:40:21+00:00"
+     "fetched_at": "2026-11-20T10:09:50+00:00"
     },
     "shoprite": {
      "price": 54.99,
@@ -670,7 +716,7 @@
      "url": "https://www.shoprite.co.za/product/black-cat-smooth-peanut-butter-400g-10140549EA",
      "region": "national-online",
      "name": "Black Cat Smooth Peanut Butter 400g",
-     "fetched_at": "2026-11-20T08:40:21+00:00"
+     "fetched_at": "2026-11-20T10:09:53+00:00"
     },
     "pnp": {
      "price": 54.99,
@@ -679,7 +725,8 @@
      "url": "https://www.pnp.co.za/black-cat-smooth-peanut-butter-400g/p/000000000000976123_EA",
      "region": "store:WC21",
      "name": "Black Cat Smooth Peanut Butter 400g",
-     "fetched_at": "2026-11-20T08:40:31+00:00"
+     "fetched_at": "2026-11-20T08:40:31+00:00",
+     "stale": true
     }
    }
   },
@@ -697,7 +744,8 @@
      "url": "https://www.pnp.co.za/all-gold-apricot-jam-smooth-640g/p/000000000000822007_EA",
      "region": "store:WC21",
      "name": "All Gold Apricot Jam Smooth 640g",
-     "fetched_at": "2026-11-20T08:40:41+00:00"
+     "fetched_at": "2026-11-20T08:40:41+00:00",
+     "stale": true
     }
    }
   },
@@ -715,7 +763,7 @@
      "url": "https://www.checkers.co.za/product/all-gold-tomato-sauce-bottle-700ml-10345469EA",
      "region": "national-online",
      "name": "ALL GOLD Tomato Sauce Bottle 700ml",
-     "fetched_at": "2026-11-20T08:40:41+00:00"
+     "fetched_at": "2026-11-20T10:09:53+00:00"
     },
     "shoprite": {
      "price": 39.99,
@@ -725,7 +773,7 @@
      "url": "https://www.shoprite.co.za/product/all-gold-tomato-sauce-bottle-700ml-10345469EA",
      "region": "national-online",
      "name": "ALL GOLD Tomato Sauce Bottle 700ml",
-     "fetched_at": "2026-11-20T08:40:42+00:00"
+     "fetched_at": "2026-11-20T10:09:56+00:00"
     },
     "pnp": {
      "price": 41.99,
@@ -735,7 +783,8 @@
      "url": "https://www.pnp.co.za/all-gold-tomato-sauce-700ml/p/000000000000458531_EA",
      "region": "store:WC21",
      "name": "All Gold Tomato Sauce 700ml",
-     "fetched_at": "2026-11-20T08:40:51+00:00"
+     "fetched_at": "2026-11-20T08:40:51+00:00",
+     "stale": true
     }
    }
   },
@@ -753,7 +802,7 @@
      "url": "https://www.checkers.co.za/product/excella-mayonnaise-750g-10644452EA",
      "region": "national-online",
      "name": "Excella Mayonnaise 750g",
-     "fetched_at": "2026-11-20T08:40:52+00:00"
+     "fetched_at": "2026-11-20T10:09:57+00:00"
     },
     "shoprite": {
      "price": 44.99,
@@ -764,7 +813,7 @@
      "url": "https://www.shoprite.co.za/product/excella-mayonnaise-750g-10644452EA",
      "region": "national-online",
      "name": "Excella Mayonnaise 750g",
-     "fetched_at": "2026-11-20T08:40:52+00:00"
+     "fetched_at": "2026-11-20T10:10:00+00:00"
     },
     "pnp": {
      "price": 39.99,
@@ -773,7 +822,8 @@
      "url": "https://www.pnp.co.za/excella-mayonnaise-750g/p/000000000000774976_EA",
      "region": "store:WC21",
      "name": "Excella Mayonnaise 750g",
-     "fetched_at": "2026-11-20T08:41:01+00:00"
+     "fetched_at": "2026-11-20T08:41:01+00:00",
+     "stale": true
     }
    }
   },
@@ -792,7 +842,7 @@
      "url": "https://www.checkers.co.za/product/knorr-beef-stock-pot-4-x-28g-10378226EA",
      "region": "national-online",
      "name": "Knorr Beef Stock Pot 4 x 28g",
-     "fetched_at": "2026-11-20T08:41:02+00:00"
+     "fetched_at": "2026-11-20T10:10:00+00:00"
     },
     "pnp": {
      "price": 39.99,
@@ -801,7 +851,8 @@
      "url": "https://www.pnp.co.za/knorr-beef-stock-pot-4-x-28g/p/000000000000515686_EA",
      "region": "store:WC21",
      "name": "Knorr Beef Stock Pot 4 x 28g",
-     "fetched_at": "2026-11-20T08:41:12+00:00"
+     "fetched_at": "2026-11-20T08:41:12+00:00",
+     "stale": true
     }
    }
   },
@@ -819,7 +870,7 @@
      "url": "https://www.checkers.co.za/product/royco-brown-onion-soup-45g-10140568EA",
      "region": "national-online",
      "name": "Royco Brown Onion Soup 45g",
-     "fetched_at": "2026-11-20T08:41:12+00:00"
+     "fetched_at": "2026-11-20T10:10:03+00:00"
     },
     "shoprite": {
      "price": 7.99,
@@ -828,7 +879,7 @@
      "url": "https://www.shoprite.co.za/product/royco-brown-onion-soup-45g-10140568EA",
      "region": "national-online",
      "name": "Royco Brown Onion Soup 45g",
-     "fetched_at": "2026-11-20T08:41:13+00:00"
+     "fetched_at": "2026-11-20T10:10:03+00:00"
     },
     "pnp": {
      "price": 7.99,
@@ -837,7 +888,8 @@
      "url": "https://www.pnp.co.za/royco-soup-brown-onion-45g/p/000000000000425204_EA",
      "region": "store:WC21",
      "name": "Royco Soup Brown Onion 45g",
-     "fetched_at": "2026-11-20T08:41:22+00:00"
+     "fetched_at": "2026-11-20T08:41:22+00:00",
+     "stale": true
     }
    }
   },
@@ -855,7 +907,7 @@
      "url": "https://www.checkers.co.za/product/jungle-oats-1kg-10129974EA",
      "region": "national-online",
      "name": "Jungle Oats 1kg",
-     "fetched_at": "2026-11-20T08:41:23+00:00"
+     "fetched_at": "2026-11-20T10:10:06+00:00"
     },
     "shoprite": {
      "price": 49.99,
@@ -864,7 +916,7 @@
      "url": "https://www.shoprite.co.za/product/jungle-oats-1kg-10129974EA",
      "region": "national-online",
      "name": "Jungle Oats 1kg",
-     "fetched_at": "2026-11-20T08:41:23+00:00"
+     "fetched_at": "2026-11-20T10:10:07+00:00"
     },
     "pnp": {
      "price": 46.99,
@@ -873,7 +925,8 @@
      "url": "https://www.pnp.co.za/jungle-oats-1kg/p/000000000000253187_EA",
      "region": "store:WC21",
      "name": "Jungle Oats 1kg",
-     "fetched_at": "2026-11-20T08:41:33+00:00"
+     "fetched_at": "2026-11-20T08:41:33+00:00",
+     "stale": true
     }
    }
   },
@@ -891,7 +944,7 @@
      "url": "https://www.checkers.co.za/product/kelloggs-corn-flakes-toasted-golden-cereal-flakes-750g-10146421EA",
      "region": "national-online",
      "name": "Kellogg's Corn Flakes Toasted Golden Cereal Flakes 750g",
-     "fetched_at": "2026-11-20T08:41:33+00:00"
+     "fetched_at": "2026-11-20T10:10:09+00:00"
     },
     "shoprite": {
      "price": 74.99,
@@ -900,7 +953,7 @@
      "url": "https://www.shoprite.co.za/product/kelloggs-corn-flakes-toasted-golden-cereal-flakes-750g-10146421EA",
      "region": "national-online",
      "name": "Kellogg's Corn Flakes Toasted Golden Cereal Flakes 750g",
-     "fetched_at": "2026-11-20T08:41:33+00:00"
+     "fetched_at": "2026-11-20T10:10:10+00:00"
     },
     "pnp": {
      "price": 76.99,
@@ -910,7 +963,8 @@
      "url": "https://www.pnp.co.za/kellogg-s-corn-flakes-750g/p/000000000000636146_EA",
      "region": "store:WC21",
      "name": "Kellogg's Corn Flakes 750g",
-     "fetched_at": "2026-11-20T08:41:43+00:00"
+     "fetched_at": "2026-11-20T08:41:43+00:00",
+     "stale": true
     }
    }
   },
@@ -928,7 +982,7 @@
      "url": "https://www.checkers.co.za/product/weet-bix-wholegrain-wheat-biscuits-900g-10137019EA",
      "region": "national-online",
      "name": "Weet-Bix Wholegrain Wheat Biscuits 900g",
-     "fetched_at": "2026-11-20T08:41:43+00:00"
+     "fetched_at": "2026-11-20T10:10:13+00:00"
     },
     "shoprite": {
      "price": 64.99,
@@ -937,7 +991,7 @@
      "url": "https://www.shoprite.co.za/product/weet-bix-wholegrain-wheat-biscuits-900g-10137019EA",
      "region": "national-online",
      "name": "Weet-Bix Wholegrain Wheat Biscuits 900g",
-     "fetched_at": "2026-11-20T08:41:44+00:00"
+     "fetched_at": "2026-11-20T10:10:13+00:00"
     },
     "pnp": {
      "price": 64.99,
@@ -947,7 +1001,8 @@
      "url": "https://www.pnp.co.za/bokomo-weet-bix-family-pack-900g/p/000000000000185249_EA",
      "region": "store:WC21",
      "name": "Bokomo Weet-Bix Family Pack 900g",
-     "fetched_at": "2026-11-20T08:41:53+00:00"
+     "fetched_at": "2026-11-20T08:41:53+00:00",
+     "stale": true
     }
    }
   },
@@ -965,7 +1020,7 @@
      "url": "https://www.checkers.co.za/product/freshpak-pure-rooibos-teabags-80-pack-10135556EA",
      "region": "national-online",
      "name": "Freshpak Pure Rooibos Teabags 80 Pack",
-     "fetched_at": "2026-11-20T08:41:54+00:00"
+     "fetched_at": "2026-11-20T10:10:16+00:00"
     },
     "shoprite": {
      "price": 64.99,
@@ -974,7 +1029,7 @@
      "url": "https://www.shoprite.co.za/product/freshpak-pure-rooibos-teabags-80-pack-10135556EA",
      "region": "national-online",
      "name": "Freshpak Pure Rooibos Teabags 80 Pack",
-     "fetched_at": "2026-11-20T08:41:54+00:00"
+     "fetched_at": "2026-11-20T10:10:16+00:00"
     }
    }
   },
@@ -992,7 +1047,7 @@
      "url": "https://www.checkers.co.za/product/nescafe-classic-instant-coffee-200g-10395676EA",
      "region": "national-online",
      "name": "NESCAFÉ Classic Instant Coffee 200g",
-     "fetched_at": "2026-11-20T08:41:57+00:00"
+     "fetched_at": "2026-11-20T10:10:19+00:00"
     },
     "shoprite": {
      "price": 149.99,
@@ -1003,7 +1058,7 @@
      "url": "https://www.shoprite.co.za/product/nescafe-classic-instant-coffee-200g-10395676EA",
      "region": "national-online",
      "name": "NESCAFÉ Classic Instant Coffee 200g",
-     "fetched_at": "2026-11-20T08:41:58+00:00"
+     "fetched_at": "2026-11-20T10:10:20+00:00"
     },
     "pnp": {
      "price": 149.99,
@@ -1012,7 +1067,8 @@
      "url": "https://www.pnp.co.za/nescafe-classic-coffee-200g/p/000000000000539178_EA",
      "region": "store:WC21",
      "name": "Nescafe Classic Coffee 200g",
-     "fetched_at": "2026-11-20T08:42:03+00:00"
+     "fetched_at": "2026-11-20T08:42:03+00:00",
+     "stale": true
     }
    }
   },
@@ -1030,7 +1086,7 @@
      "url": "https://www.checkers.co.za/product/coca-cola-original-taste-less-sugar-soft-drink-2l-10136669EA",
      "region": "national-online",
      "name": "Coca-Cola Original Taste Less Sugar Soft Drink 2L",
-     "fetched_at": "2026-11-20T08:42:04+00:00"
+     "fetched_at": "2026-11-20T10:10:22+00:00"
     },
     "shoprite": {
      "price": 28.99,
@@ -1039,7 +1095,7 @@
      "url": "https://www.shoprite.co.za/product/coca-cola-original-taste-less-sugar-soft-drink-2l-10136669EA",
      "region": "national-online",
      "name": "Coca-Cola Original Taste Less Sugar Soft Drink 2L",
-     "fetched_at": "2026-11-20T08:42:04+00:00"
+     "fetched_at": "2026-11-20T10:10:23+00:00"
     }
    }
   },
@@ -1057,7 +1113,7 @@
      "url": "https://www.checkers.co.za/product/liqui-fruit-100-fruit-juice-orange-blend-carton-1l-10140277EA",
      "region": "national-online",
      "name": "Liqui Fruit 100% Fruit Juice Orange Blend Carton 1L",
-     "fetched_at": "2026-11-20T08:42:07+00:00"
+     "fetched_at": "2026-11-20T10:10:26+00:00"
     },
     "shoprite": {
      "price": 39.99,
@@ -1066,7 +1122,7 @@
      "url": "https://www.shoprite.co.za/product/liqui-fruit-100-fruit-juice-orange-blend-carton-1l-10140277EA",
      "region": "national-online",
      "name": "Liqui Fruit 100% Fruit Juice Orange Blend Carton 1L",
-     "fetched_at": "2026-11-20T08:42:07+00:00"
+     "fetched_at": "2026-11-20T10:10:26+00:00"
     },
     "pnp": {
      "price": 29.99,
@@ -1075,7 +1131,8 @@
      "url": "https://www.pnp.co.za/liqui-fruit-orange-fruit-juice-1l/p/000000000000220959_EA",
      "region": "store:WC21",
      "name": "Liqui-Fruit Orange Fruit Juice 1L",
-     "fetched_at": "2026-11-20T08:42:13+00:00"
+     "fetched_at": "2026-11-20T08:42:13+00:00",
+     "stale": true
     }
    }
   },
@@ -1093,7 +1150,8 @@
      "url": "https://www.pnp.co.za/eskort-garlic-polony-1kg/p/000000000000123999_EA",
      "region": "store:WC21",
      "name": "Eskort Garlic Polony 1kg",
-     "fetched_at": "2026-11-20T08:42:23+00:00"
+     "fetched_at": "2026-11-20T08:42:23+00:00",
+     "stale": true
     }
    }
   },
@@ -1111,7 +1169,7 @@
      "url": "https://www.checkers.co.za/product/baby-soft-fresh-white-2-ply-toilet-tissue-roll-9-pack-10149465EA",
      "region": "national-online",
      "name": "Baby Soft Fresh White 2 Ply Toilet Tissue Roll 9 Pack",
-     "fetched_at": "2026-11-20T08:42:24+00:00"
+     "fetched_at": "2026-11-20T10:10:29+00:00"
     },
     "shoprite": {
      "price": 94.99,
@@ -1120,7 +1178,7 @@
      "url": "https://www.shoprite.co.za/product/baby-soft-fresh-white-2-ply-toilet-tissue-roll-9-pack-10149465EA",
      "region": "national-online",
      "name": "Baby Soft Fresh White 2 Ply Toilet Tissue Roll 9 Pack",
-     "fetched_at": "2026-11-20T08:42:24+00:00"
+     "fetched_at": "2026-11-20T10:10:29+00:00"
     },
     "pnp": {
      "price": 89.99,
@@ -1130,7 +1188,8 @@
      "url": "https://www.pnp.co.za/baby-soft-white-2-ply-toilet-paper-9-pack/p/000000000000178565_EA",
      "region": "store:WC21",
      "name": "Baby Soft White 2 Ply Toilet Paper 9 Pack",
-     "fetched_at": "2026-11-20T08:42:34+00:00"
+     "fetched_at": "2026-11-20T08:42:34+00:00",
+     "stale": true
     }
    }
   },
@@ -1148,7 +1207,7 @@
      "url": "https://www.checkers.co.za/product/sunlight-original-dishwashing-liquid-750ml-10126901EA",
      "region": "national-online",
      "name": "Sunlight Original Dishwashing Liquid 750ml",
-     "fetched_at": "2026-11-20T08:42:34+00:00"
+     "fetched_at": "2026-11-20T10:10:32+00:00"
     },
     "shoprite": {
      "price": 36.99,
@@ -1157,7 +1216,7 @@
      "url": "https://www.shoprite.co.za/product/sunlight-original-dishwashing-liquid-750ml-10126901EA",
      "region": "national-online",
      "name": "Sunlight Original Dishwashing Liquid 750ml",
-     "fetched_at": "2026-11-20T08:42:34+00:00"
+     "fetched_at": "2026-11-20T10:10:32+00:00"
     },
     "pnp": {
      "price": 36.99,
@@ -1166,7 +1225,8 @@
      "url": "https://www.pnp.co.za/sunlight-original-dishwashing-liquid-750ml/p/000000000001007088_EA",
      "region": "store:WC21",
      "name": "Sunlight Original Dishwashing Liquid 750ml",
-     "fetched_at": "2026-11-20T08:42:44+00:00"
+     "fetched_at": "2026-11-20T08:42:44+00:00",
+     "stale": true
     }
    }
   },
@@ -1184,7 +1244,7 @@
      "url": "https://www.checkers.co.za/product/omo-supersoak-hand-washing-powder-touch-of-comfort-2kg-10532233EA",
      "region": "national-online",
      "name": "OMO Supersoak Hand Washing Powder Touch Of Comfort 2kg",
-     "fetched_at": "2026-11-20T08:42:44+00:00"
+     "fetched_at": "2026-11-20T10:10:36+00:00"
     },
     "shoprite": {
      "price": 74.99,
@@ -1193,7 +1253,7 @@
      "url": "https://www.shoprite.co.za/product/omo-supersoak-hand-washing-powder-touch-of-comfort-2kg-10532233EA",
      "region": "national-online",
      "name": "OMO Supersoak Hand Washing Powder Touch Of Comfort 2kg",
-     "fetched_at": "2026-11-20T08:42:44+00:00"
+     "fetched_at": "2026-11-20T10:10:36+00:00"
     },
     "pnp": {
      "price": 74.99,
@@ -1202,7 +1262,8 @@
      "url": "https://www.pnp.co.za/omo-supersoak-hand-washing-powder-2kg/p/000000000001000640_EA",
      "region": "store:WC21",
      "name": "Omo Supersoak Hand Washing Powder 2kg",
-     "fetched_at": "2026-11-20T08:42:54+00:00"
+     "fetched_at": "2026-11-20T08:42:54+00:00",
+     "stale": true
     }
    }
   },
@@ -1220,7 +1281,7 @@
      "url": "https://www.checkers.co.za/product/lux-soft-caress-beauty-soap-bar-150g-10362095EA",
      "region": "national-online",
      "name": "LUX Soft Caress Beauty Soap Bar 150g",
-     "fetched_at": "2026-11-20T08:42:54+00:00"
+     "fetched_at": "2026-11-20T10:10:39+00:00"
     },
     "shoprite": {
      "price": 19.99,
@@ -1229,7 +1290,7 @@
      "url": "https://www.shoprite.co.za/product/lux-soft-caress-beauty-soap-bar-150g-10362095EA",
      "region": "national-online",
      "name": "LUX Soft Caress Beauty Soap Bar 150g",
-     "fetched_at": "2026-11-20T08:42:55+00:00"
+     "fetched_at": "2026-11-20T10:10:39+00:00"
     },
     "pnp": {
      "price": 19.99,
@@ -1239,7 +1300,8 @@
      "url": "https://www.pnp.co.za/lux-soft-caress-soap-150g/p/000000000001001408_EA",
      "region": "store:WC21",
      "name": "Lux Soft Caress Soap 150g",
-     "fetched_at": "2026-11-20T08:43:04+00:00"
+     "fetched_at": "2026-11-20T08:43:04+00:00",
+     "stale": true
     }
    }
   },
@@ -1257,7 +1319,7 @@
      "url": "https://www.checkers.co.za/product/colgate-herbal-fluoride-toothpaste-100ml-10142463EA",
      "region": "national-online",
      "name": "Colgate Herbal Fluoride Toothpaste 100ml",
-     "fetched_at": "2026-11-20T08:43:04+00:00"
+     "fetched_at": "2026-11-20T10:10:42+00:00"
     },
     "shoprite": {
      "price": 35.99,
@@ -1266,7 +1328,7 @@
      "url": "https://www.shoprite.co.za/product/colgate-herbal-fluoride-toothpaste-100ml-10142463EA",
      "region": "national-online",
      "name": "Colgate Herbal Fluoride Toothpaste 100ml",
-     "fetched_at": "2026-11-20T08:43:05+00:00"
+     "fetched_at": "2026-11-20T10:10:43+00:00"
     },
     "pnp": {
      "price": 35.99,
@@ -1276,7 +1338,8 @@
      "url": "https://www.pnp.co.za/colgate-herbal-toothpaste-100ml/p/000000000000138284_EA",
      "region": "store:WC21",
      "name": "Colgate Herbal Toothpaste 100ml",
-     "fetched_at": "2026-11-20T08:43:14+00:00"
+     "fetched_at": "2026-11-20T08:43:14+00:00",
+     "stale": true
     }
    }
   },
@@ -1294,7 +1357,7 @@
      "url": "https://www.checkers.co.za/product/pampers-size-4-9-14kg-disposable-nappies-66-pack-10511187EA",
      "region": "national-online",
      "name": "Pampers Size 4 9-14kg Disposable Nappies 66 Pack",
-     "fetched_at": "2026-11-20T08:43:15+00:00"
+     "fetched_at": "2026-11-20T10:10:45+00:00"
     },
     "shoprite": {
      "price": 314.99,
@@ -1305,7 +1368,7 @@
      "url": "https://www.shoprite.co.za/product/pampers-size-4-9-14kg-disposable-nappies-66-pack-10511187EA",
      "region": "national-online",
      "name": "Pampers Size 4 9-14kg Disposable Nappies 66 Pack",
-     "fetched_at": "2026-11-20T08:43:15+00:00"
+     "fetched_at": "2026-11-20T10:10:46+00:00"
     },
     "pnp": {
      "price": 334.99,
@@ -1315,7 +1378,8 @@
      "url": "https://www.pnp.co.za/pampers-baby-dry-size-4-jumbo-pack-66-nappies/p/000000000000680021_EA",
      "region": "store:WC21",
      "name": "Pampers Baby Dry Size 4 Jumbo Pack 66 Nappies",
-     "fetched_at": "2026-11-20T08:43:24+00:00"
+     "fetched_at": "2026-11-20T08:43:24+00:00",
+     "stale": true
     }
    }
   }
