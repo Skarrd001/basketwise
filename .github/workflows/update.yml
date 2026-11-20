@@ -84,6 +84,7 @@ jobs:
           cp -r site/* _site/
           mkdir -p _site/data
           cp data/prices.json _site/data/
+          [ -f data/trends.json ] && cp data/trends.json _site/data/ || true
           [ -f data/stores.json ] && cp data/stores.json _site/data/ || true
 
       - uses: actions/upload-pages-artifact@v3

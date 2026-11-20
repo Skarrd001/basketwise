@@ -113,6 +113,7 @@ def main() -> int:
     (hist / f"{day}.json").write_text(json.dumps(
         {i["id"]: {r: p["price"] for r, p in i["prices"].items() if not p.get("stale")} for i in items},
         separators=(",", ":")))
+    _write_trends(hist, DATA)
     log.info("done: %s, %d requests", {r: h["status"] for r, h in health.items()}, f.requests_made)
 
     # Alert: a retailer that was fine last run and is now down means their site changed.
@@ -123,6 +124,26 @@ def main() -> int:
         log.error("REGRESSION: %s stopped returning prices - scraper needs attention", regressions)
         return 1
     return 0
+
+
+def _write_trends(hist, data_dir, days: int = 90) -> None:
+    """Summarise history into one small file the ops console charts: the cost of a reference
+    basket (one of each item a chain priced that day) per retailer over time."""
+    files = sorted(hist.glob("20*.json"))[-days:]
+    series: dict[str, list] = {}
+    dates = []
+    for fp in files:
+        snap = json.loads(fp.read_text())
+        dates.append(fp.stem)
+        totals: dict[str, float] = {}
+        counts: dict[str, int] = {}
+        for prices in snap.values():
+            for r, v in prices.items():
+                totals[r] = totals.get(r, 0) + v
+                counts[r] = counts.get(r, 0) + 1
+        for r, t in totals.items():
+            series.setdefault(r, []).append({"date": fp.stem, "total": round(t, 2), "items": counts[r]})
+    (data_dir / "trends.json").write_text(json.dumps({"dates": dates, "series": series}, separators=(",", ":")))
 
 
 def _slim(rec: dict) -> dict:
