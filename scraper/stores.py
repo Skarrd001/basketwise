@@ -16,7 +16,8 @@ from common import BOT_UA
 
 ROOT = Path(__file__).resolve().parent.parent
 log = logging.getLogger("basketwise")
-ENDPOINTS = ["https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
+ENDPOINTS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter",
+             "https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.private.coffee/api/interpreter"]
 
 QUERY = """
 [out:json][timeout:300];
@@ -53,7 +54,7 @@ def main() -> int:
     data = None
     for ep in ENDPOINTS:
         try:
-            r = requests.post(ep, data={"data": QUERY}, headers={"User-Agent": BOT_UA}, timeout=400)
+            r = requests.post(ep, data={"data": QUERY}, headers={"User-Agent": "BasketWise/1.0 (+https://github.com/Skarrd001/basketwise)", "Accept": "*/*"}, timeout=400)
             if r.ok:
                 data = r.json()
                 break

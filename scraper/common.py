@@ -17,7 +17,7 @@ log = logging.getLogger("basketwise")
 # Identify ourselves honestly. A contact URL lets a retailer reach us instead of just blocking us.
 BOT_UA = os.environ.get(
     "BASKETWISE_UA",
-    "Mozilla/5.0 (compatible; BasketWiseBot/1.0; +https://github.com/basketwise/basketwise/blob/main/docs/BOT.md)",
+    "Mozilla/5.0 (compatible; BasketWiseBot/1.0; +https://github.com/Skarrd001/basketwise/blob/main/docs/BOT.md)",
 )
 
 # Minimum seconds between requests to the same host. PnP's robots.txt asks for 10s.
