@@ -84,3 +84,6 @@ td .dated { display: block; font-size: .68rem; color: var(--muted); font-weight:
   .fields { grid-template-columns: 1fr; }
   .opt .total { font-size: 1.2rem; }
 }
+
+.others ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 6px; font-size: .9rem; }
+.disclaimer { margin-top: 14px; font-size: .78rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 10px; }

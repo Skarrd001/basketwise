@@ -36,7 +36,7 @@ RETAILER_NOTES = {
     "shoprite": "Online price, refreshed daily. Xtra Savings card deals shown separately.",
     "pnp": "Online price for PnP's default pricing region. PnP allows one request every 10 seconds, early mornings only, so prices refresh on a rolling basis and each shows its date. Coverage grows every day.",
     "woolworths": "Not available: woolworths.co.za blocks automated access. We do not bypass this.",
-    "spar": "SPAR stores set their own prices; only published national SPAR specials are available.",
+    "spar": "SPAR stores set their own prices and SPAR publishes its specials only as leaflet images, so we can't price your basket there. See SPAR's specials page.",
 }
 STAPLES = ["milk-dairy-and-eggs", "bakery", "food-cupboard", "household-and-cleaning", "toiletries",
            "beverages-juices-and-cordials", "coffee-tea-and-hot-drinks", "frozen-foods", "baby",

@@ -8,6 +8,21 @@ const CHAINS = {
   pnp:        { name: "Pick n Pay", color: "var(--pnp)" },
   spar:       { name: "SPAR",       color: "var(--spar)" },
   woolworths: { name: "Woolworths", color: "var(--woolworths)" },
+  usave:      { name: "Usave",            color: "#e2001a" },
+  ok:         { name: "OK Foods",         color: "#d71920" },
+  boxer:      { name: "Boxer",            color: "#00843d" },
+  foodlovers: { name: "Food Lover's Market", color: "#7ab800" },
+  makro:      { name: "Makro",            color: "#003c71" },
+};
+// Chains that don't publish machine-readable prices: we show the nearest store and their own specials page.
+const SPECIALS = {
+  spar: "https://www.spar.co.za/national-specials",
+  woolworths: "https://www.woolworths.co.za/browse/food/promotions-specials",
+  usave: "https://www.usave.co.za/specials.html",
+  ok: "https://www.okfoods.co.za/specials.html",
+  boxer: "https://www.boxer.co.za/specials/",
+  foodlovers: "https://foodloversmarket.co.za/specials/",
+  makro: "https://www.makro.co.za/",
 };
 const ROAD_FACTOR = 1.3;      // straight line -> typical road distance
 const AVG_SPEED_KMH = 35;     // urban driving, for the time-cost option
@@ -306,7 +321,17 @@ function render() {
     const worst = shown.filter((o) => o.kind === "single").slice(-1)[0];
     if (worst && worst !== bestSingle) html += `<p class="hint">Shopping at the best option instead of the most expensive saves <b>${R(worst.total - bestSingle.total)}</b> on this basket.</p>`;
   }
+  html += otherStoresPanel(near, chains);
+  html += `<p class="disclaimer">Prices shown are the most recent we have on record and may not be 100% up to date at the time you shop. Where a price is older than today, its date is shown. Always check the price at the till.</p>`;
   res.innerHTML = html;
+}
+
+function otherStoresPanel(near, pricedChains) {
+  const rows = Object.keys(SPECIALS).filter((c) => !pricedChains.includes(c) && near[c])
+    .sort((a, b) => near[a].d - near[b].d)
+    .map((c) => `<li><span class="dot" style="background:${CHAINS[c].color}"></span> <b>${CHAINS[c].name}</b>: ${esc(near[c].name || "")}${near[c].suburb ? ", " + esc(near[c].suburb) : ""} (${near[c].d.toFixed(1)} km) · <a href="${SPECIALS[c]}" target="_blank" rel="noopener nofollow">This week's specials ↗</a></li>`);
+  if (!rows.length) return "";
+  return `<div class="others"><p class="hint" style="margin:14px 0 6px"><b>Other stores near you</b>. These chains don't publish their prices online, so we can't price your basket there. Check their specials before you go:</p><ul>${rows.join("")}</ul></div>`;
 }
 
 function optCard(o, best, top) {

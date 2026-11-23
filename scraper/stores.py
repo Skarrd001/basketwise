@@ -23,8 +23,8 @@ QUERY = """
 [out:json][timeout:300];
 area["ISO3166-1"="ZA"][admin_level=2]->.za;
 (
-  nwr["shop"~"^(supermarket|convenience|department_store|wholesale|grocery)$"]["brand"~"checkers|shoprite|pick n pay|spar|woolworths",i](area.za);
-  nwr["shop"~"^(supermarket|convenience|department_store|grocery)$"]["name"~"^(checkers|shoprite|pick n pay|pnp|spar|superspar|kwikspar|woolworths)",i](area.za);
+  nwr["shop"~"^(supermarket|convenience|department_store|wholesale|grocery|greengrocer)$"]["brand"~"checkers|shoprite|pick n pay|spar|woolworths|usave|^ok |boxer|food lover|makro",i](area.za);
+  nwr["shop"~"^(supermarket|convenience|department_store|wholesale|grocery|greengrocer)$"]["name"~"^(checkers|shoprite|pick n pay|pnp|spar|superspar|kwikspar|woolworths|usave|ok (foods|grocer|minimark|express|value)|boxer|food lover|makro)",i](area.za);
 );
 out center tags;
 """
@@ -35,8 +35,14 @@ CHAINS = [
     ("pnp", re.compile(r"pick\s*n\s*pay|\bpnp\b", re.I)),
     ("woolworths", re.compile(r"woolworths", re.I)),
     ("spar", re.compile(r"spar\b", re.I)),
+    # Chains without online prices: shown on the map with a link to their weekly specials.
+    ("usave", re.compile(r"\busave\b", re.I)),
+    ("ok", re.compile(r"^ok\b|\bok (foods|grocer|minimark|express|value)\b", re.I)),
+    ("boxer", re.compile(r"\bboxer\b", re.I)),
+    ("foodlovers", re.compile(r"food\s*lover", re.I)),
+    ("makro", re.compile(r"\bmakro\b", re.I)),
 ]
-EXCLUDE = re.compile(r"liquor|tops|clothing|pharmacy|build ?it|pet", re.I)
+EXCLUDE = re.compile(r"liquor|tops|clothing|pharmacy|\bbuild\b|build ?it|\bpet\b|cash ?& ?carry", re.I)
 
 
 def classify(tags: dict) -> str | None:
