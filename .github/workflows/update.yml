@@ -34,32 +34,25 @@ concurrency:
   group: update
   cancel-in-progress: false
 
-defaults:
-  run:
-    shell: bash   # Git Bash on Windows, native bash on Mac/Linux
-
 jobs:
   scrape:
     runs-on: [self-hosted, basketwise]
     timeout-minutes: 120
+    env:
+      PYTHONUTF8: "1"   # Windows defaults to cp1252; product names include characters like É and ×
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
+      # Uses the Python installed on your PC (actions/setup-python can't install Python when the
+      # runner is a Windows service). Every step below is a plain command that works in PowerShell too.
       - run: python -m pip install -q -r scraper/requirements.txt
 
       - name: Decide weekly jobs
         id: plan
-        run: |
-          dow=$(date -u +%u)   # 1=Mon .. 7=Sun
-          stores=false; discover=false
-          { [ "$dow" = 1 ] || [ ! -f data/stores.json ] || [ "${{ inputs.stores }}" = true ]; } && stores=true
-          { [ "$dow" = 7 ] || [ "${{ inputs.discover }}" = true ]; } && discover=true
-          echo "stores=$stores" >> "$GITHUB_OUTPUT"
-          echo "discover=$discover" >> "$GITHUB_OUTPUT"
+        env:
+          IN_STORES: ${{ inputs.stores }}
+          IN_DISCOVER: ${{ inputs.discover }}
+        run: python scraper/ci.py plan
 
       - name: Refresh store locations (Mondays)
         if: steps.plan.outputs.stores == 'true'
@@ -90,19 +83,11 @@ jobs:
         run: python -m unittest discover -s tests -v
 
       - name: Commit data
-        run: |
-          git config user.name "basketwise-bot"
-          git config user.email "basketwise-bot@users.noreply.github.com"
-          git add data
-          git diff --cached --quiet || git commit -m "data: prices $(date -u +%F)"
-          git pull --rebase -q origin main
-          git push
+        run: python scraper/ci.py commit
 
       - name: Fail loudly if a retailer broke
         if: steps.prices.outcome == 'failure'
-        run: |
-          echo "::error::A retailer stopped returning prices. See the 'Fetch today's prices' log."
-          exit 1
+        run: python scraper/ci.py fail "A retailer stopped returning prices. See the 'Fetch today's prices' log."
 
   publish:
     needs: scrape
@@ -118,6 +103,7 @@ jobs:
           ref: main   # pick up the data commit the scrape job just pushed
 
       - name: Build site
+        shell: bash
         run: |
           mkdir -p _site/data
           cp -r site/* _site/
