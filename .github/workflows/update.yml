@@ -1,5 +1,15 @@
 name: Update prices and deploy
 
+# Two halves:
+#   scrape  - runs on YOUR computer (a "self-hosted runner"). Checkers/Shoprite block GitHub's
+#             datacenter servers, but serve an ordinary home internet connection.
+#   publish - runs on GitHub's free servers: builds the site from the committed data and deploys it.
+# If your computer is off, scrape waits in the queue (up to 24h) and the site keeps yesterday's prices.
+#
+# SECURITY: a self-hosted runner executes this repo's workflow code on your PC. This workflow has no
+# pull_request trigger, so strangers can't run code on it. Keep it that way, and in
+# Settings -> Actions -> General, require approval for workflows from outside contributors.
+
 on:
   schedule:
     # 04:20 UTC = 06:20 SAST, every day. Inside PnP's robots.txt visit window (04:00-08:45 UTC).
@@ -24,9 +34,13 @@ concurrency:
   group: update
   cancel-in-progress: false
 
+defaults:
+  run:
+    shell: bash   # Git Bash on Windows, native bash on Mac/Linux
+
 jobs:
   scrape:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, basketwise]
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
@@ -34,10 +48,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-          cache: pip
-          cache-dependency-path: scraper/requirements.txt
 
-      - run: pip install -r scraper/requirements.txt
+      - run: python -m pip install -q -r scraper/requirements.txt
 
       - name: Decide weekly jobs
         id: plan
@@ -83,13 +95,32 @@ jobs:
           git config user.email "basketwise-bot@users.noreply.github.com"
           git add data
           git diff --cached --quiet || git commit -m "data: prices $(date -u +%F)"
+          git pull --rebase -q origin main
           git push
+
+      - name: Fail loudly if a retailer broke
+        if: steps.prices.outcome == 'failure'
+        run: |
+          echo "::error::A retailer stopped returning prices. See the 'Fetch today's prices' log."
+          exit 1
+
+  publish:
+    needs: scrape
+    # Publish even if scraping failed or never ran (PC off): the site then shows the last good data.
+    if: always()
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main   # pick up the data commit the scrape job just pushed
 
       - name: Build site
         run: |
-          mkdir -p _site
-          cp -r site/* _site/
           mkdir -p _site/data
+          cp -r site/* _site/
           cp data/prices.json _site/data/
           [ -f data/trends.json ] && cp data/trends.json _site/data/ || true
           [ -f data/stores.json ] && cp data/stores.json _site/data/ || true
@@ -98,19 +129,5 @@ jobs:
         with:
           path: _site
 
-      - name: Fail loudly if a retailer broke
-        if: steps.prices.outcome == 'failure'
-        run: |
-          echo "::error::A retailer stopped returning prices. See the 'Fetch today's prices' log."
-          exit 1
-
-  deploy:
-    needs: scrape
-    if: always() && needs.scrape.result != 'cancelled'
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
