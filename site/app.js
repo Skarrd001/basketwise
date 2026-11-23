@@ -47,6 +47,13 @@ async function boot() {
   for (const it of prices.items) it._hay = (it.name + " " + (it.brand || "") + " " + (it.category || "")).toLowerCase();
   S.stores = stores.stores || [];
   S.basket = Object.fromEntries(Object.entries(store.get("basket", {})).filter(([id]) => S.byId.has(id)));
+  // Links from product pages: ?add=<id> puts that product in the basket, then tidies the address bar.
+  const add = new URLSearchParams(location.search).get("add");
+  if (add && S.byId.has(add)) {
+    S.basket[add] = (S.basket[add] || 0) + 1;
+    store.set("basket", S.basket);
+    history.replaceState(null, "", location.pathname);
+  }
   for (const id of ["fuel", "cons", "time", "maxkm"]) {
     const v = store.get(id, null);
     if (v !== null) $(id).value = v;
@@ -75,6 +82,10 @@ async function boot() {
   $("geo").addEventListener("click", useGeolocation);
   $("addr-form").addEventListener("submit", geocode);
   render();
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([e]) => { document.body.classList.toggle("results-visible", e.isIntersecting); })
+      .observe($("step-results"));
+  }
 }
 
 function renderFreshness() {
@@ -247,7 +258,7 @@ function render() {
   const lines = Object.entries(S.basket).map(([id, qty]) => ({ it: S.byId.get(id), qty })).filter((l) => l.it);
   renderBreakdown(lines);
   const res = $("results");
-  if (!lines.length) { res.innerHTML = `<p class="hint">Add items to your basket to see where to shop.</p>`; drawStores({}); return; }
+  if (!lines.length) { res.innerHTML = `<p class="hint">Add items to your basket to see where to shop.</p>`; drawStores({}); updateSticky(null); return; }
 
   const near = nearestStores();
   drawStores(near);
@@ -302,11 +313,34 @@ function render() {
   if (bestSplit && bestSingle && bestSplit.total < bestSingle.total - 1) shown.push(bestSplit);
   shown.sort((x, y) => x.total - y.total);
 
+  // "Your basket at each store": every chain that prices any of the basket, full totals, gaps listed.
+  const summary = chains.map((c) => {
+    const have = lines.filter((l) => l.it.prices[c]);
+    const goods = have.reduce((a, { it, qty }) => a + unitPrice(it.prices[c]).v * qty, 0);
+    const extra = delivery ? deliveryFee(c, goods).fee : (near[c] ? tripCost(near[c].d * ROAD_FACTOR * 2) : null);
+    return { c, have: have.length, missing: lines.filter((l) => !l.it.prices[c]).map((l) => l.it.name),
+             goods, extra, total: goods + (extra || 0), st: near[c] };
+  }).filter((r) => !haveStores || delivery || r.st)
+    .sort((a, b) => a.missing.length - b.missing.length || a.total - b.total);
+  S.summary = summary;
+
   let html = "";
+  if (!delivery && !S.loc) {
+    html += `<p><button class="btn primary" id="geo2">📍 Use my location to add travel costs</button></p>`;
+  }
+  if (summary.length) {
+    const lo = Math.min(...summary.filter((r) => !r.missing.length).map((r) => r.total));
+    html += `<h3 class="sub-h">Your basket at each store</h3><div class="scroll"><table class="sumtab"><thead><tr><th>Store</th><th>Items</th><th>Total</th></tr></thead><tbody>` +
+      summary.map((r) => `<tr class="${!r.missing.length && r.total === lo ? "best-row" : ""}"><td><span class="dot" style="background:${CHAINS[r.c].color}"></span> ${CHAINS[r.c].name}${r.st && !delivery ? `<small>${r.st.d.toFixed(1)} km</small>` : ""}</td>` +
+        `<td>${r.have}/${lines.length}</td><td><b>${R(r.total)}</b><small>${R(r.goods)} groceries${r.extra === null ? "" : " + " + (r.extra === 0 && delivery ? "free delivery" : R(r.extra) + (delivery ? " delivery" : " travel"))}</small></td></tr>` +
+        (r.missing.length ? `<tr class="miss"><td colspan="3">Not priced at ${CHAINS[r.c].name}: ${r.missing.map(esc).join(", ")}</td></tr>` : "")).join("") +
+      `</tbody></table></div>`;
+  }
+  html += `<h3 class="sub-h">Best option, like-for-like</h3>`;
   const cardOn = $("loyalty").checked;
   html += `<p class="hint">${delivery ? "🚚 <b>Home delivery</b>: groceries + each store's delivery fee." : "🚗 <b>Drive to store</b>: groceries + fuel there and back."} ` +
     `Prices shown ${cardOn ? "<b>with</b> loyalty-card specials (Xtra Savings, Smart Shopper)." : "at <b>normal shelf price</b> (no loyalty card)."}</p>`;
-  if (!delivery && !S.loc) html += `<p class="hint warn">Set your location in step 1 to include travel costs. Showing basket prices only.</p>`;
+  if (!delivery && !S.loc) html += `<p class="hint warn">Travel costs aren't included yet: tap "Use my location" above, or set it in step 1.</p>`;
   else if (!delivery && !S.stores.length) html += `<p class="hint warn">Store locations are still loading on the server. Showing basket prices only.</p>`;
   if (!shown.length) html += `<p class="hint">No nearby chains to compare. Try increasing the max distance in travel settings, or see the per-item table below.</p>`;
   html += `<div class="rank">` + shown.map((o, k) => optCard(o, k === 0, shown[0])).join("") + `</div>`;
@@ -324,6 +358,20 @@ function render() {
   html += otherStoresPanel(near, chains);
   html += `<p class="disclaimer">Prices shown are the most recent we have on record and may not be 100% up to date at the time you shop. Where a price is older than today, its date is shown. Always check the price at the till.</p>`;
   res.innerHTML = html;
+  if ($("geo2")) $("geo2").addEventListener("click", useGeolocation);
+  updateSticky(shown[0], delivery);
+}
+
+function updateSticky(best, delivery) {
+  const bar = $("sticky");
+  if (!bar) return;
+  const n = Object.keys(S.basket).length;
+  if (!n || !best) { bar.hidden = true; return; }
+  const what = best.delivery ? "incl. delivery" : best.stores.length ? "incl. travel" : "groceries only";
+  const name = best.chains.map((c) => CHAINS[c].name).join(" + ");
+  bar.innerHTML = `<span><b>${n} item${n === 1 ? "" : "s"}</b> · Cheapest: <b>${name} ${R(best.total)}</b> <small>${what}</small></span><button class="btn primary" id="sticky-go">See comparison</button>`;
+  bar.hidden = false;
+  $("sticky-go").addEventListener("click", () => $("step-results").scrollIntoView({ behavior: "smooth" }));
 }
 
 function otherStoresPanel(near, pricedChains) {

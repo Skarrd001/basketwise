@@ -186,6 +186,14 @@ def main() -> int:
             for pid in preset_ids if pid in byid}
     (hist / f"{datetime.now(timezone.utc):%Y-%m-%d}.json").write_text(json.dumps(snap, separators=(",", ":")))
     _write_trends(hist, DATA)
+    # Weekly snapshot of every fresh price (one file per ISO week, last run of the week wins) so the
+    # weekly post can report price changes since last week.
+    wk = DATA / "weekly"
+    wk.mkdir(exist_ok=True)
+    y, w, _ = datetime.now(timezone.utc).isocalendar()
+    (wk / f"{y}-W{w:02d}.json").write_text(json.dumps(
+        {i["id"]: {r: p["price"] for r, p in i["prices"].items() if not p.get("stale")} for i in out_items},
+        separators=(",", ":")), encoding="utf-8")
     log.info("done: %d items; %s", len(out_items), {r: h["status"] for r, h in health.items()})
 
     regressions = [r for r, h in health.items()
