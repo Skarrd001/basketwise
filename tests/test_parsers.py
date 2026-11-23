@@ -86,3 +86,28 @@ class TestRobotsWindow(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestCircuitBreaker(unittest.TestCase):
+    def test_host_is_skipped_after_repeated_throttling(self):
+        from common import Fetcher
+        f = Fetcher(respect_robots=False)
+        calls = []
+
+        class R:
+            status_code = 429
+            url = "https://slow.example/x"
+
+        f.s.get = lambda *a, **k: calls.append(1) or R()
+        with mock.patch("common.time.sleep"):
+            self.assertIsNone(f.get("https://slow.example/a"))
+            self.assertIsNone(f.get("https://slow.example/b"))
+        self.assertIn("slow.example", f.blocked_hosts)
+        self.assertEqual(len(calls), 3)  # stopped after 3 strikes, didn't keep hammering
+
+    def test_time_budget_stops_requests(self):
+        from common import Fetcher
+        f = Fetcher(respect_robots=False)
+        f.deadline = 0
+        f.s.get = lambda *a, **k: self.fail("should not request after the deadline")
+        self.assertIsNone(f.get("https://any.example/x"))

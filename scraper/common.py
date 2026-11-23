@@ -45,6 +45,20 @@ class Fetcher:
         self.respect_robots = respect_robots
         self.requests_made = 0
         self.blocked_hosts: set[str] = set()
+        # Circuit breaker: a host that throttles/drops us repeatedly is skipped for the rest of the run,
+        # so one unhappy retailer can't stall the whole job (its last prices are carried forward).
+        self.strikes: dict[str, int] = {}
+        self.max_strikes = int(os.environ.get("BASKETWISE_MAX_STRIKES", "3"))
+        # Hard time budget for the whole run; after it, every get() returns None so the job can save.
+        budget = float(os.environ.get("BASKETWISE_BUDGET_MIN", "40"))
+        self.deadline = time.time() + budget * 60
+
+    def _strike(self, host: str, why: str) -> None:
+        self.strikes[host] = self.strikes.get(host, 0) + 1
+        if self.strikes[host] >= self.max_strikes and host not in self.blocked_hosts:
+            log.error("%s: %d throttles/failures (%s) - skipping this host for the rest of the run",
+                      host, self.strikes[host], why)
+            self.blocked_hosts.add(host)
 
     def _robots_ok(self, url: str) -> bool:
         if not self.respect_robots:
@@ -81,6 +95,11 @@ class Fetcher:
         host = urlparse(url).netloc
         if host in self.blocked_hosts:
             return None
+        if time.time() > self.deadline:
+            if not getattr(self, "_deadline_logged", False):
+                log.error("time budget used up - stopping requests so results can be saved")
+                self._deadline_logged = True
+            return None
         window = VISIT_WINDOW_UTC.get(host)
         if window and self.respect_robots:
             hhmm = int(time.strftime("%H%M", time.gmtime()))
@@ -89,9 +108,11 @@ class Fetcher:
                 return None
         headers = {"Accept": "application/json"} if accept_json else {}
         for attempt in range(retries):
+            if host in self.blocked_hosts:
+                return None
             self._wait(host)
             try:
-                r = self.s.get(url, timeout=45, headers=headers)
+                r = self.s.get(url, timeout=25, headers=headers)
                 self.requests_made += 1
             except requests.TooManyRedirects:
                 log.warning("GET %s redirect loop (bot block page) - not retrying", url)
@@ -99,9 +120,11 @@ class Fetcher:
                 return None
             except requests.RequestException as e:
                 log.warning("GET %s failed (%s), attempt %d", url, e, attempt + 1)
-                time.sleep(5 * (attempt + 1))
+                self._strike(host, type(e).__name__)
+                time.sleep(5)
                 continue
             if r.status_code == 200:
+                self.strikes[host] = 0  # healthy again
                 return r
             if "/400?support_id" in r.url:
                 log.warning("GET %s served a WAF block page - not retrying", url)
@@ -110,7 +133,8 @@ class Fetcher:
             if r.status_code in (403, 429, 503):
                 # Being throttled or blocked: back off hard, never hammer.
                 log.warning("GET %s -> %s, backing off", url, r.status_code)
-                time.sleep(30 * (attempt + 1))
+                self._strike(host, f"HTTP {r.status_code}")
+                time.sleep(20)
                 continue
             log.warning("GET %s -> %s", url, r.status_code)
             return None
