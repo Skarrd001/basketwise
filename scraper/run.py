@@ -53,7 +53,10 @@ def main() -> int:
     prev = json.loads((DATA / "prices.json").read_text(encoding="utf-8")) if (DATA / "prices.json").exists() else {}
     prev_items = {i["id"]: i for i in prev.get("items", [])}
     preset = json.loads((Path(__file__).parent / "preset.json").read_text(encoding="utf-8"))
+    index_slots = json.loads((Path(__file__).parent / "index_basket.json").read_text(encoding="utf-8"))
+    index_all = [i for slot in index_slots for i in slot["ids"]]
     preset_ids = [p["barcode"] for p in preset]
+    keep_ids = set(preset_ids) | set(index_all)
 
     # ---- 1. Checkers + Shoprite in parallel
     bulk: dict[str, list] = {}
@@ -90,7 +93,7 @@ def main() -> int:
     def prio(it):
         both = "checkers" in it["prices"] and "shoprite" in it["prices"]
         d = STAPLES.index(it["dept"]) if it.get("dept") in STAPLES else 99
-        return (it["id"] not in preset_ids, not both, d)
+        return (not (set(it["barcodes"]) & set(index_all)), it["id"] not in preset_ids, not both, d)
 
     cands = [{"barcode": it["id"], "barcodes": sorted(it["barcodes"]), "name": it["name"], "brand": it.get("brand")}
              for it in sorted(items.values(), key=prio)]
@@ -132,21 +135,21 @@ def main() -> int:
         hit = next((spar[b] for b in it["barcodes"] if b in spar), None)
         if hit:
             it["prices"]["spar"] = _slim(hit)
-    # a retailer whose bulk fetch failed today keeps its previous prices (dated) for a while
+    # Checkers/Shoprite products missing from today's list (a failed fetch, or dropped off the online
+    # listing for a day) keep their last price, dated, for up to a week (KEEP_DAYS if the whole fetch failed).
     for r in ("checkers", "shoprite"):
-        if bulk.get(r):
-            continue
+        keep_for = 7 if bulk.get(r) else KEEP_DAYS
         for cid, old in prev_items.items():
             p = (old.get("prices") or {}).get(r)
-            if p and _age_days(p.get("fetched_at")) <= KEEP_DAYS:
+            if p and _age_days(p.get("fetched_at")) <= keep_for and not (cid in items and r in items[cid]["prices"]):
                 it = items.setdefault(cid, {"id": cid, "name": old["name"], "brand": old.get("brand"),
                                             "category": old.get("category"), "barcodes": {cid}, "prices": {}})
                 it["prices"].setdefault(r, {**p, "stale": True})
 
-    # Keep products that at least two retailers price (comparable), plus the preset basket.
+    # Keep products that at least two retailers price (comparable), plus the preset and standard baskets.
     out_items = []
     for it in items.values():
-        if len(it["prices"]) >= 2 or it["id"] in preset_ids:
+        if len(it["prices"]) >= 2 or it["id"] in keep_ids:
             out_items.append({"id": it["id"], "name": it["name"], "brand": it.get("brand"),
                               "category": it.get("category"), "prices": it["prices"]})
     out_items.sort(key=lambda i: (i.get("category") or "", i["name"]))
@@ -174,7 +177,8 @@ def main() -> int:
                      "note": RETAILER_NOTES[r], "delivery": DELIVERY_FEES.get(r), **extra}
 
     doc = {"generated_at": now(), "item_count": len(out_items), "retailers": health,
-           "preset": [{"id": p["barcode"], "qty": p["qty"]} for p in preset], "items": out_items}
+           "preset": [{"id": p["barcode"], "qty": p["qty"]} for p in preset],
+           "index": _resolve_index(index_slots, out_items), "items": out_items}
     DATA.mkdir(exist_ok=True)
     (DATA / "prices.json").write_text(json.dumps(doc, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
 
@@ -183,7 +187,7 @@ def main() -> int:
     hist.mkdir(exist_ok=True)
     byid = {i["id"]: i for i in out_items}
     snap = {pid: {r: p["price"] for r, p in byid[pid]["prices"].items() if not p.get("stale")}
-            for pid in preset_ids if pid in byid}
+            for pid in ([x["id"] for x in doc["index"]] or preset_ids) if pid in byid}
     (hist / f"{datetime.now(timezone.utc):%Y-%m-%d}.json").write_text(json.dumps(snap, separators=(",", ":")))
     _write_trends(hist, DATA)
     # Weekly snapshot of every fresh price (one file per ISO week, last run of the week wins) so the
@@ -203,6 +207,18 @@ def main() -> int:
         log.error("REGRESSION: %s stopped returning prices - scraper needs attention", regressions)
         return 1
     return 0
+
+
+def _resolve_index(slots: list[dict], out_items: list[dict]) -> list[dict]:
+    """Each standard-basket slot -> the barcode (of its alternatives) priced at the most stores today."""
+    byid = {i["id"]: i for i in out_items}
+    out = []
+    for slot in slots:
+        found = [byid[i] for i in slot["ids"] if i in byid]
+        if found:
+            best = max(found, key=lambda it: len(it["prices"]))
+            out.append({"label": slot["label"], "id": best["id"], "qty": slot.get("qty", 1)})
+    return out
 
 
 def _write_trends(hist, data_dir, days: int = 90) -> None:

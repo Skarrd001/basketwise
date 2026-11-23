@@ -132,7 +132,8 @@ def weekly(doc: dict) -> dict:
     fresh = lambda it: {r: p for r, p in it["prices"].items() if not p.get("stale")}  # noqa: E731
     # 1. reference basket (the "monthly family shop" preset), like-for-like on items every chain prices
     byid = {i["id"]: i for i in items}
-    lines = [(byid[p["id"]], p["qty"]) for p in doc.get("preset", []) if p["id"] in byid]
+    basket_def = doc.get("index") or doc.get("preset", [])  # the 15-item standard basket
+    lines = [(byid[p["id"]], p.get("qty", 1)) for p in basket_def if p["id"] in byid]
     chains = [r for r in ("checkers", "shoprite", "pnp")
               if sum(1 for it, _ in lines if r in it["prices"]) >= max(1, 0.6 * len(lines))]
     common = [(it, q) for it, q in lines if all(r in it["prices"] for r in chains)]
@@ -182,10 +183,10 @@ def weekly_page(wk: dict, date: str) -> tuple[str, str]:
     if wk["basket"]:
         best_r, best_t = wk["basket"][0]
         worst_r, worst_t = wk["basket"][-1]
-        parts.append(f'<section class="card"><h2>Cheapest basic basket</h2><p>On the {wk["basket_n"]} everyday items '
+        parts.append(f'<section class="card"><h2>Cheapest standard basket</h2><p>On the {wk["basket_n"]} everyday items '
                      f'every store prices online, the cheapest basket is at <b>{NAMES[best_r]}: {R(best_t)}</b>.</p>'
                      + li([f"{NAMES[r]}: {R(t)}" for r, t in wk["basket"]]) + "</section>")
-        txt += [f"Cheapest basic basket ({wk['basket_n']} items): {NAMES[best_r]} {R(best_t)}"
+        txt += [f"Cheapest standard basket ({wk['basket_n']} items): {NAMES[best_r]} {R(best_t)}"
                 + (f", {R(worst_t - best_t)} less than {NAMES[worst_r]}" if worst_t - best_t >= 1 else ""), ""]
     if wk["gaps"]:
         parts.append('<section class="card"><h2>Same product, different price</h2>' + li(
@@ -236,7 +237,7 @@ def share_image(wk: dict, date: str, out: Path) -> bool:
     y = 230
     if wk["basket"]:
         r, t = wk["basket"][0]
-        d.text((70, y), f"Cheapest basic basket ({wk['basket_n']} items)", font=font(32), fill="#d8f3e6")
+        d.text((70, y), f"Cheapest standard basket ({wk['basket_n']} items)", font=font(32), fill="#d8f3e6")
         d.text((70, y + 44), f"{NAMES[r]}  {R(t)}", font=font(64, True), fill="white")
         y += 160
     d.text((70, y), "Same product, different price:", font=font(32, True), fill="#ffd54a")

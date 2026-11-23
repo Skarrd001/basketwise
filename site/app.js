@@ -256,7 +256,54 @@ function deliveryFee(chain, goods) {
            belowMin: goods < (d.min_order || 0) };
 }
 
+// ---------------------------------------------------------------- standard basket (15 staples)
+function renderStandard() {
+  const el = $("std-body");
+  const idx = (S.prices.index || []).map((x) => ({ ...x, it: S.byId.get(x.id) })).filter((x) => x.it);
+  if (!idx.length) { $("std").hidden = true; return; }
+  const priced = (c) => idx.filter((x) => x.it.prices[c]).length;
+  const chains = ["checkers", "shoprite", "pnp", "spar", "woolworths"].filter((c) => priced(c) >= Math.ceil(idx.length * 0.6));
+  const common = idx.filter((x) => chains.every((c) => x.it.prices[c]));
+  const rows = chains.map((c) => ({ c, total: common.reduce((a, x) => a + unitPrice(x.it.prices[c]).v * (x.qty || 1), 0) }))
+    .sort((a, b) => a.total - b.total);
+  const others = ["checkers", "shoprite", "pnp"].filter((c) => !chains.includes(c));
+  const best = rows[0];
+  let h = "";
+  if (rows.length >= 2 && common.length) {
+    const max = rows[rows.length - 1].total;
+    h += `<div class="std-rank">` + rows.map((r, k) => `<div class="std-row ${k === 0 ? "win" : ""}">
+        <span class="std-name"><span class="dot" style="background:${CHAINS[r.c].color}"></span> ${CHAINS[r.c].name}</span>
+        <span class="std-bar"><span style="width:${Math.max(8, Math.round(100 * r.total / max))}%"></span></span>
+        <span class="std-total">${R(r.total)}${k === 0 ? ` <span class="badge">Cheapest</span>` : ` <small>+${R(r.total - best.total)}</small>`}</span></div>`).join("") + `</div>`;
+    h += `<p class="hint">Compared on the <b>${common.length} of ${idx.length}</b> everyday items that ${rows.map((r) => CHAINS[r.c].name).join(", ")} all price, at ${$("loyalty").checked ? "loyalty-card" : "normal shelf"} prices. Store prices only: build your own basket below to add travel or delivery.` +
+      (others.length ? ` ${others.map((c) => CHAINS[c].name).join(", ")}: ${others.map((c) => priced(c)).join(", ")} of ${idx.length} items priced so far (coverage grows daily).` : "") + `</p>`;
+  } else {
+    h += `<p class="hint">Not enough stores price these items yet to compare fairly. Coverage grows every morning.</p>`;
+  }
+  const allc = ["checkers", "shoprite", "pnp"].filter((c) => priced(c));
+  h += `<details><summary>See the ${idx.length} items and prices</summary><div class="scroll"><table><thead><tr><th>Item</th>${allc.map((c) => `<th>${CHAINS[c].name}</th>`).join("")}</tr></thead><tbody>` +
+    idx.map((x) => {
+      const vals = allc.map((c) => (x.it.prices[c] ? unitPrice(x.it.prices[c]).v : null));
+      const lo = Math.min(...vals.filter((v) => v !== null));
+      return `<tr><td>${esc(x.it.name)}</td>` + allc.map((c, k) => {
+        const p = x.it.prices[c];
+        if (!p) return `<td class="na">–</td>`;
+        const when = p.stale && p.fetched_at ? `<span class="dated">from ${new Date(p.fetched_at).toLocaleDateString("en-ZA", { day: "numeric", month: "short" })}</span>` : "";
+        return `<td class="${vals[k] === lo ? "cheap" : ""}">${R(vals[k])}${when}</td>`;
+      }).join("") + `</tr>`;
+    }).join("") + `</tbody></table></div></details>`;
+  h += `<p style="margin-top:10px"><button class="btn primary" id="std-use">Use this basket as mine</button> <span class="hint">then add or remove items, and include travel or delivery</span></p>`;
+  el.innerHTML = h;
+  $("std-use").addEventListener("click", () => {
+    S.basket = {};
+    for (const x of idx) S.basket[x.id] = x.qty || 1;
+    saveBasket();
+    $("step-results").scrollIntoView({ behavior: "smooth" });
+  });
+}
+
 function render() {
+  renderStandard();
   const lines = Object.entries(S.basket).map(([id, qty]) => ({ it: S.byId.get(id), qty })).filter((l) => l.it);
   renderBreakdown(lines);
   const res = $("results");

@@ -326,7 +326,8 @@ def fetch_catalogue_bulk(f: Fetcher, retailer: str, log=None) -> tuple[list[dict
 def _bulk_record(retailer: str, p: dict, dept: str) -> dict | None:
     bcs = p.get("barcodes") or []
     price = p.get("discountedPrice") or p.get("price")
-    if not bcs or not price or float(price) <= 0 or p.get("outOfStock"):
+    # Keep out-of-stock items: a temporary gap at the online store doesn't change the shelf price.
+    if not bcs or not price or float(price) <= 0:
         return None
     name = (p.get("displayName") or p.get("name") or "").strip()
     promo = ((p.get("bonusBuy") or {}).get("name") or "").strip() or None
@@ -335,6 +336,7 @@ def _bulk_record(retailer: str, p: dict, dept: str) -> dict | None:
         "retailer": retailer, "barcode": str(bcs[0]), "barcodes": [str(b) for b in bcs], "name": name,
         "brand": p.get("brand"), "department": dept, "product_id": art,
         "price": float(price), "promo": promo, "promo_price": _promo_price(promo),
+        **({"in_stock": False} if p.get("outOfStock") else {}),
         "url": f"https://{RETAILERS[retailer]['domain']}/product/{product_slug(name)}-{art}{uom}",
         "fetched_at": now(),
     }
