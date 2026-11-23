@@ -95,7 +95,10 @@ def main() -> int:
     for r, meta in RETAILERS.items():
         cov = sum(1 for i in items if r in i["prices"] and not i["prices"][r].get("stale"))
         fresh = sum(1 for i in items if r in i["prices"])  # incl. carried-forward
-        status = "ok" if cov >= 0.7 * max(1, len(items)) else ("partial" if cov else "unavailable")
+        # Judge against the items this retailer is mapped to (it may not stock all 38), and allow for
+        # day-to-day "not stocked online today" gaps; only a big drop means the scraper broke.
+        mapped = sum(1 for e in catalogue if r in e.get("products", {})) or len(items)
+        status = "ok" if cov >= 0.6 * mapped else ("partial" if cov else "unavailable")
         if r in paused:
             status = "paused"  # not crawled this run (robots.txt visit window); prices carried forward
         if r == "spar" and cov:
