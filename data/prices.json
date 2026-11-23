@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-11-23T09:12:22+00:00",
+ "generated_at": "2026-11-23T10:31:55+00:00",
  "item_count": 38,
  "retailers": {
   "checkers": {
    "name": "Checkers",
-   "status": "unavailable",
-   "items_priced": 0,
-   "requests_ok": 0,
+   "status": "partial",
+   "items_priced": 23,
+   "requests_ok": 23,
    "requests_tried": 33,
    "note": "Online (Sixty60) price, which Checkers states matches in-store. Xtra Savings card deals shown separately.",
    "delivery": {
@@ -18,9 +18,9 @@
   },
   "shoprite": {
    "name": "Shoprite",
-   "status": "unavailable",
-   "items_priced": 0,
-   "requests_ok": 0,
+   "status": "partial",
+   "items_priced": 22,
+   "requests_ok": 22,
    "requests_tried": 32,
    "note": "Online price. Xtra Savings card deals shown separately.",
    "delivery": {
@@ -84,14 +84,11 @@
     "checkers": {
      "price": 37.99,
      "regular_price": 37.99,
-     "promo": "Now R29.99",
-     "promo_price": 29.99,
-     "in_stock": true,
+     "in_stock": false,
      "url": "https://www.checkers.co.za/product/clover-fresh-full-cream-milk-2l-10136729EA",
      "region": "national-online",
      "name": "Clover Fresh Full Cream Milk 2L",
-     "fetched_at": "2026-11-20T10:14:13+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:29:58+00:00"
     },
     "shoprite": {
      "price": 37.99,
@@ -102,8 +99,7 @@
      "url": "https://www.shoprite.co.za/product/clover-fresh-full-cream-milk-2l-10136729EA",
      "region": "national-online",
      "name": "Clover Fresh Full Cream Milk 2L",
-     "fetched_at": "2026-11-20T10:14:14+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:29:59+00:00"
     }
    }
   },
@@ -121,20 +117,16 @@
      "url": "https://www.checkers.co.za/product/parmalat-everfresh-uht-full-cream-milk-1l-10149691EA",
      "region": "national-online",
      "name": "Parmalat Everfresh UHT Full Cream Milk 1L",
-     "fetched_at": "2026-11-20T10:14:16+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:02+00:00"
     },
     "shoprite": {
      "price": 22.99,
      "regular_price": 22.99,
-     "promo": "Now R15.99",
-     "promo_price": 15.99,
      "in_stock": true,
      "url": "https://www.shoprite.co.za/product/parmalat-everfresh-uht-full-cream-milk-1l-10149691EA",
      "region": "national-online",
      "name": "Parmalat Everfresh UHT Full Cream Milk 1L",
-     "fetched_at": "2026-11-20T10:14:17+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:03+00:00"
     }
    }
   },
@@ -152,8 +144,7 @@
      "url": "https://www.checkers.co.za/product/nulaid-large-eggs-18-pack-10125869EA",
      "region": "national-online",
      "name": "Nulaid Large Eggs 18 Pack",
-     "fetched_at": "2026-11-20T10:14:19+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:05+00:00"
     }
    }
   },
@@ -167,13 +158,11 @@
     "checkers": {
      "price": 99.99,
      "regular_price": 99.99,
-     "promo": "Buy 2 For R139",
      "in_stock": true,
      "url": "https://www.checkers.co.za/product/clover-mooi-river-salted-butter-500g-10148865EA",
      "region": "national-online",
      "name": "Clover Mooi River Salted Butter 500g",
-     "fetched_at": "2026-11-20T10:14:23+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:08+00:00"
     }
    }
   },
@@ -187,13 +176,11 @@
     "checkers": {
      "price": 154.99,
      "regular_price": 154.99,
-     "promo": "Buy 2 For R199",
      "in_stock": true,
      "url": "https://www.checkers.co.za/product/clover-full-cream-cheddar-cheese-800g-10392454EA",
      "region": "national-online",
      "name": "Clover Full Cream Cheddar Cheese 800g",
-     "fetched_at": "2026-11-20T10:14:26+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:11+00:00"
     }
    }
   },
@@ -211,18 +198,18 @@
      "url": "https://www.checkers.co.za/product/danone-ultra-mel-vanilla-flavoured-custard-1kg-10928017EA",
      "region": "national-online",
      "name": "Danone Ultra Mel Vanilla Flavoured Custard 1kg",
-     "fetched_at": "2026-11-20T10:14:29+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:15+00:00"
     },
     "shoprite": {
      "price": 39.99,
      "regular_price": 39.99,
+     "promo": "Now R24.99",
+     "promo_price": 24.99,
      "in_stock": true,
      "url": "https://www.shoprite.co.za/product/danone-ultra-mel-vanilla-flavoured-custard-1kg-10928017EA",
      "region": "national-online",
      "name": "Danone Ultra Mel Vanilla Flavoured Custard 1kg",
-     "fetched_at": "2026-11-20T10:14:29+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:15+00:00"
     }
    }
   },
@@ -240,8 +227,7 @@
      "url": "https://www.checkers.co.za/product/albany-superior-brown-bread-700g-10136298EA",
      "region": "national-online",
      "name": "Albany Superior Brown Bread 700g",
-     "fetched_at": "2026-11-20T10:14:32+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:18+00:00"
     },
     "shoprite": {
      "price": 16.99,
@@ -250,8 +236,7 @@
      "url": "https://www.shoprite.co.za/product/albany-superior-brown-bread-700g-10136298EA",
      "region": "national-online",
      "name": "Albany Superior Brown Bread 700g",
-     "fetched_at": "2026-11-20T10:14:33+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:18+00:00"
     }
    }
   },
@@ -269,8 +254,7 @@
      "url": "https://www.checkers.co.za/product/albany-superior-white-bread-700g-10136301EA",
      "region": "national-online",
      "name": "Albany Superior White Bread 700g",
-     "fetched_at": "2026-11-20T10:14:36+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:21+00:00"
     },
     "shoprite": {
      "price": 18.99,
@@ -279,8 +263,7 @@
      "url": "https://www.shoprite.co.za/product/albany-superior-white-bread-700g-10136301EA",
      "region": "national-online",
      "name": "Albany Superior White Bread 700g",
-     "fetched_at": "2026-11-20T10:14:36+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:21+00:00"
     }
    }
   },
@@ -300,8 +283,7 @@
      "url": "https://www.shoprite.co.za/product/white-star-super-maize-meal-10kg-10157677EA",
      "region": "national-online",
      "name": "White Star Super Maize Meal 10kg",
-     "fetched_at": "2026-11-20T10:14:39+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:25+00:00"
     }
    }
   },
@@ -319,8 +301,7 @@
      "url": "https://www.checkers.co.za/product/white-star-super-maize-meal-5kg-10703439EA",
      "region": "national-online",
      "name": "White Star Super Maize Meal 5kg",
-     "fetched_at": "2026-11-20T10:14:40+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:25+00:00"
     },
     "shoprite": {
      "price": 79.99,
@@ -330,8 +311,7 @@
      "url": "https://www.shoprite.co.za/product/white-star-super-maize-meal-5kg-10703439EA",
      "region": "national-online",
      "name": "White Star Super Maize Meal 5kg",
-     "fetched_at": "2026-11-20T10:14:43+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:28+00:00"
     }
    }
   },
@@ -345,13 +325,11 @@
     "checkers": {
      "price": 44.99,
      "regular_price": 44.99,
-     "promo": "Buy 2 For R55",
-     "in_stock": true,
+     "in_stock": false,
      "url": "https://www.checkers.co.za/product/tastic-long-grain-parboiled-white-rice-2kg-10130258EA",
      "region": "national-online",
      "name": "Tastic Long Grain Parboiled White Rice 2kg",
-     "fetched_at": "2026-11-20T10:14:43+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:29+00:00"
     },
     "shoprite": {
      "price": 44.99,
@@ -362,8 +340,7 @@
      "url": "https://www.shoprite.co.za/product/tastic-long-grain-parboiled-white-rice-2kg-10130258EA",
      "region": "national-online",
      "name": "Tastic Long Grain Parboiled White Rice 2kg",
-     "fetched_at": "2026-11-20T10:14:46+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:31+00:00"
     }
    }
   },
@@ -381,8 +358,7 @@
      "url": "https://www.shoprite.co.za/product/selati-white-sugar-5kg-10141899EA",
      "region": "national-online",
      "name": "Selati White Sugar 5kg",
-     "fetched_at": "2026-11-20T10:14:50+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:35+00:00"
     }
    }
   },
@@ -400,8 +376,7 @@
      "url": "https://www.checkers.co.za/product/huletts-sunsweet-brown-sugar-2kg-10725085EA",
      "region": "national-online",
      "name": "Huletts SunSweet Brown Sugar 2kg",
-     "fetched_at": "2026-11-20T10:14:50+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:35+00:00"
     },
     "shoprite": {
      "price": 47.99,
@@ -411,8 +386,7 @@
      "url": "https://www.shoprite.co.za/product/huletts-sunsweet-brown-sugar-2kg-10725085EA",
      "region": "national-online",
      "name": "Huletts SunSweet Brown Sugar 2kg",
-     "fetched_at": "2026-11-20T10:14:53+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:38+00:00"
     }
    }
   },
@@ -422,30 +396,7 @@
    "category": "Pantry",
    "barcode": "6001205102562",
    "canonical_name": "Snowflake Cake Wheat Flour 2.5kg",
-   "prices": {
-    "checkers": {
-     "price": 42.99,
-     "regular_price": 42.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/snowflake-cake-wheat-flour-25kg-10136836EA",
-     "region": "national-online",
-     "name": "Snowflake Cake Wheat Flour 2.5kg",
-     "fetched_at": "2026-11-20T10:14:53+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 41.99,
-     "regular_price": 41.99,
-     "promo": "Now R32.99",
-     "promo_price": 32.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/snowflake-cake-wheat-flour-25kg-10136836EA",
-     "region": "national-online",
-     "name": "Snowflake Cake Wheat Flour 2.5kg",
-     "fetched_at": "2026-11-20T10:14:56+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "sunflower-oil-2l",
@@ -457,12 +408,13 @@
     "checkers": {
      "price": 84.99,
      "regular_price": 84.99,
+     "promo": "Now R74.99",
+     "promo_price": 74.99,
      "in_stock": true,
      "url": "https://www.checkers.co.za/product/sunfoil-pure-sunflower-seed-oil-2l-10130959EA",
      "region": "national-online",
      "name": "Sunfoil Pure Sunflower Seed Oil 2L",
-     "fetched_at": "2026-11-20T10:14:56+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:42+00:00"
     },
     "shoprite": {
      "price": 94.99,
@@ -472,8 +424,7 @@
      "url": "https://www.shoprite.co.za/product/sunfoil-pure-sunflower-seed-oil-2l-10130959EA",
      "region": "national-online",
      "name": "Sunfoil Pure Sunflower Seed Oil 2L",
-     "fetched_at": "2026-11-20T10:14:59+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:44+00:00"
     }
    }
   },
@@ -483,29 +434,7 @@
    "category": "Pantry",
    "barcode": "6001277000322",
    "canonical_name": "Fatti's & Moni's Spaghetti Pasta 500g",
-   "prices": {
-    "checkers": {
-     "price": 19.99,
-     "regular_price": 19.99,
-     "promo": "Buy 2 For R30",
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/fattis-and-monis-spaghetti-pasta-500g-10125342EA",
-     "region": "national-online",
-     "name": "Fatti's & Moni's Spaghetti Pasta 500g",
-     "fetched_at": "2026-11-20T10:15:00+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 19.99,
-     "regular_price": 19.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/fattis-and-monis-spaghetti-pasta-500g-10125342EA",
-     "region": "national-online",
-     "name": "Fatti's & Moni's Spaghetti Pasta 500g",
-     "fetched_at": "2026-11-20T10:15:02+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "baked-beans-400g",
@@ -513,29 +442,7 @@
    "category": "Pantry",
    "barcode": "5000232822222",
    "canonical_name": "KOO Baked Beans in Tomato Sauce 400g",
-   "prices": {
-    "checkers": {
-     "price": 17.99,
-     "regular_price": 17.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/koo-baked-beans-in-tomato-sauce-400g-10126789EA",
-     "region": "national-online",
-     "name": "KOO Baked Beans in Tomato Sauce 400g",
-     "fetched_at": "2026-11-20T10:15:03+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 15.99,
-     "regular_price": 15.99,
-     "promo": "Buy 4 For R58",
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/koo-baked-beans-in-tomato-sauce-400g-10126789EA",
-     "region": "national-online",
-     "name": "KOO Baked Beans in Tomato Sauce 400g",
-     "fetched_at": "2026-11-20T10:15:06+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "pilchards-400g",
@@ -551,8 +458,7 @@
      "url": "https://www.shoprite.co.za/product/lucky-star-pilchards-in-tomato-sauce-400g-10185083EA",
      "region": "national-online",
      "name": "Lucky Star Pilchards in Tomato Sauce 400g",
-     "fetched_at": "2026-11-20T10:15:09+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:54+00:00"
     }
    }
   },
@@ -562,30 +468,7 @@
    "category": "Pantry",
    "barcode": "60073341",
    "canonical_name": "Black Cat Smooth Peanut Butter 400g",
-   "prices": {
-    "checkers": {
-     "price": 49.99,
-     "regular_price": 49.99,
-     "promo": "Now R36.99",
-     "promo_price": 36.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/black-cat-smooth-peanut-butter-400g-10140549EA",
-     "region": "national-online",
-     "name": "Black Cat Smooth Peanut Butter 400g",
-     "fetched_at": "2026-11-20T10:15:09+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 54.99,
-     "regular_price": 54.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/black-cat-smooth-peanut-butter-400g-10140549EA",
-     "region": "national-online",
-     "name": "Black Cat Smooth Peanut Butter 400g",
-     "fetched_at": "2026-11-20T10:15:12+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "jam-640g",
@@ -609,8 +492,7 @@
      "url": "https://www.checkers.co.za/product/all-gold-tomato-sauce-bottle-700ml-10345469EA",
      "region": "national-online",
      "name": "ALL GOLD Tomato Sauce Bottle 700ml",
-     "fetched_at": "2026-11-20T10:15:12+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:30:57+00:00"
     },
     "shoprite": {
      "price": 39.99,
@@ -620,8 +502,7 @@
      "url": "https://www.shoprite.co.za/product/all-gold-tomato-sauce-bottle-700ml-10345469EA",
      "region": "national-online",
      "name": "ALL GOLD Tomato Sauce Bottle 700ml",
-     "fetched_at": "2026-11-20T10:15:15+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:00+00:00"
     }
    }
   },
@@ -639,8 +520,7 @@
      "url": "https://www.checkers.co.za/product/excella-mayonnaise-750g-10644452EA",
      "region": "national-online",
      "name": "Excella Mayonnaise 750g",
-     "fetched_at": "2026-11-20T10:15:16+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:01+00:00"
     },
     "shoprite": {
      "price": 44.99,
@@ -651,8 +531,7 @@
      "url": "https://www.shoprite.co.za/product/excella-mayonnaise-750g-10644452EA",
      "region": "national-online",
      "name": "Excella Mayonnaise 750g",
-     "fetched_at": "2026-11-20T10:15:19+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:03+00:00"
     }
    }
   },
@@ -671,8 +550,7 @@
      "url": "https://www.checkers.co.za/product/knorr-beef-stock-pot-4-x-28g-10378226EA",
      "region": "national-online",
      "name": "Knorr Beef Stock Pot 4 x 28g",
-     "fetched_at": "2026-11-20T10:15:19+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:04+00:00"
     }
    }
   },
@@ -682,28 +560,7 @@
    "category": "Pantry",
    "barcode": "6009682952267",
    "canonical_name": "Royco Brown Onion Soup 45g",
-   "prices": {
-    "checkers": {
-     "price": 7.99,
-     "regular_price": 7.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/royco-brown-onion-soup-45g-10140568EA",
-     "region": "national-online",
-     "name": "Royco Brown Onion Soup 45g",
-     "fetched_at": "2026-11-20T10:15:22+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 7.99,
-     "regular_price": 7.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/royco-brown-onion-soup-45g-10140568EA",
-     "region": "national-online",
-     "name": "Royco Brown Onion Soup 45g",
-     "fetched_at": "2026-11-20T10:15:22+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "oats-1kg",
@@ -719,18 +576,18 @@
      "url": "https://www.checkers.co.za/product/jungle-oats-1kg-10129974EA",
      "region": "national-online",
      "name": "Jungle Oats 1kg",
-     "fetched_at": "2026-11-20T10:15:25+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:10+00:00"
     },
     "shoprite": {
      "price": 49.99,
      "regular_price": 49.99,
+     "promo": "Now R38.99",
+     "promo_price": 38.99,
      "in_stock": true,
      "url": "https://www.shoprite.co.za/product/jungle-oats-1kg-10129974EA",
      "region": "national-online",
      "name": "Jungle Oats 1kg",
-     "fetched_at": "2026-11-20T10:15:26+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:10+00:00"
     }
    }
   },
@@ -740,28 +597,7 @@
    "category": "Breakfast",
    "barcode": "4003994112427",
    "canonical_name": "Kellogg's Corn Flakes Toasted Golden Cereal Flakes 750g",
-   "prices": {
-    "checkers": {
-     "price": 74.99,
-     "regular_price": 74.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/kelloggs-corn-flakes-toasted-golden-cereal-flakes-750g-10146421EA",
-     "region": "national-online",
-     "name": "Kellogg's Corn Flakes Toasted Golden Cereal Flakes 750g",
-     "fetched_at": "2026-11-20T10:15:28+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 74.99,
-     "regular_price": 74.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/kelloggs-corn-flakes-toasted-golden-cereal-flakes-750g-10146421EA",
-     "region": "national-online",
-     "name": "Kellogg's Corn Flakes Toasted Golden Cereal Flakes 750g",
-     "fetched_at": "2026-11-20T10:15:29+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "weetbix-900g",
@@ -773,12 +609,12 @@
     "checkers": {
      "price": 64.99,
      "regular_price": 64.99,
+     "promo": "Bundle Deal",
      "in_stock": true,
      "url": "https://www.checkers.co.za/product/weet-bix-wholegrain-wheat-biscuits-900g-10137019EA",
      "region": "national-online",
      "name": "Weet-Bix Wholegrain Wheat Biscuits 900g",
-     "fetched_at": "2026-11-20T10:15:32+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:16+00:00"
     },
     "shoprite": {
      "price": 64.99,
@@ -787,8 +623,7 @@
      "url": "https://www.shoprite.co.za/product/weet-bix-wholegrain-wheat-biscuits-900g-10137019EA",
      "region": "national-online",
      "name": "Weet-Bix Wholegrain Wheat Biscuits 900g",
-     "fetched_at": "2026-11-20T10:15:32+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:17+00:00"
     }
    }
   },
@@ -798,28 +633,7 @@
    "category": "Drinks",
    "barcode": "6009702443898",
    "canonical_name": "Freshpak Pure Rooibos Teabags 80 Pack",
-   "prices": {
-    "checkers": {
-     "price": 56.99,
-     "regular_price": 56.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/freshpak-pure-rooibos-teabags-80-pack-10135556EA",
-     "region": "national-online",
-     "name": "Freshpak Pure Rooibos Teabags 80 Pack",
-     "fetched_at": "2026-11-20T10:15:35+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 64.99,
-     "regular_price": 64.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/freshpak-pure-rooibos-teabags-80-pack-10135556EA",
-     "region": "national-online",
-     "name": "Freshpak Pure Rooibos Teabags 80 Pack",
-     "fetched_at": "2026-11-20T10:15:35+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "coffee-200g",
@@ -831,24 +645,22 @@
     "checkers": {
      "price": 149.99,
      "regular_price": 149.99,
+     "promo": "Now R119.99",
+     "promo_price": 119.99,
      "in_stock": true,
      "url": "https://www.checkers.co.za/product/nescafe-classic-instant-coffee-200g-10395676EA",
      "region": "national-online",
      "name": "NESCAFÉ Classic Instant Coffee 200g",
-     "fetched_at": "2026-11-20T10:15:38+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:23+00:00"
     },
     "shoprite": {
      "price": 149.99,
      "regular_price": 149.99,
-     "promo": "Now R129.99",
-     "promo_price": 129.99,
      "in_stock": true,
      "url": "https://www.shoprite.co.za/product/nescafe-classic-instant-coffee-200g-10395676EA",
      "region": "national-online",
      "name": "NESCAFÉ Classic Instant Coffee 200g",
-     "fetched_at": "2026-11-20T10:15:39+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:24+00:00"
     }
    }
   },
@@ -858,28 +670,7 @@
    "category": "Drinks",
    "barcode": "5000112524895",
    "canonical_name": "Coca-Cola Original Taste Less Sugar Soft Drink 2L",
-   "prices": {
-    "checkers": {
-     "price": 28.99,
-     "regular_price": 28.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/coca-cola-original-taste-less-sugar-soft-drink-2l-10136669EA",
-     "region": "national-online",
-     "name": "Coca-Cola Original Taste Less Sugar Soft Drink 2L",
-     "fetched_at": "2026-11-20T10:15:41+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 28.99,
-     "regular_price": 28.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/coca-cola-original-taste-less-sugar-soft-drink-2l-10136669EA",
-     "region": "national-online",
-     "name": "Coca-Cola Original Taste Less Sugar Soft Drink 2L",
-     "fetched_at": "2026-11-20T10:15:42+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "juice-1l",
@@ -895,8 +686,7 @@
      "url": "https://www.checkers.co.za/product/liqui-fruit-100-fruit-juice-orange-blend-carton-1l-10140277EA",
      "region": "national-online",
      "name": "Liqui Fruit 100% Fruit Juice Orange Blend Carton 1L",
-     "fetched_at": "2026-11-20T10:15:45+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:30+00:00"
     },
     "shoprite": {
      "price": 39.99,
@@ -905,8 +695,7 @@
      "url": "https://www.shoprite.co.za/product/liqui-fruit-100-fruit-juice-orange-blend-carton-1l-10140277EA",
      "region": "national-online",
      "name": "Liqui Fruit 100% Fruit Juice Orange Blend Carton 1L",
-     "fetched_at": "2026-11-20T10:15:45+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:31+00:00"
     }
    }
   },
@@ -932,8 +721,7 @@
      "url": "https://www.checkers.co.za/product/baby-soft-fresh-white-2-ply-toilet-tissue-roll-9-pack-10149465EA",
      "region": "national-online",
      "name": "Baby Soft Fresh White 2 Ply Toilet Tissue Roll 9 Pack",
-     "fetched_at": "2026-11-20T10:15:48+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:33+00:00"
     },
     "shoprite": {
      "price": 94.99,
@@ -942,8 +730,7 @@
      "url": "https://www.shoprite.co.za/product/baby-soft-fresh-white-2-ply-toilet-tissue-roll-9-pack-10149465EA",
      "region": "national-online",
      "name": "Baby Soft Fresh White 2 Ply Toilet Tissue Roll 9 Pack",
-     "fetched_at": "2026-11-20T10:15:48+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:34+00:00"
     }
    }
   },
@@ -953,28 +740,7 @@
    "category": "Household",
    "barcode": "6001085116789",
    "canonical_name": "Sunlight Original Dishwashing Liquid 750ml",
-   "prices": {
-    "checkers": {
-     "price": 36.99,
-     "regular_price": 36.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/sunlight-original-dishwashing-liquid-750ml-10126901EA",
-     "region": "national-online",
-     "name": "Sunlight Original Dishwashing Liquid 750ml",
-     "fetched_at": "2026-11-20T10:15:51+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 36.99,
-     "regular_price": 36.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/sunlight-original-dishwashing-liquid-750ml-10126901EA",
-     "region": "national-online",
-     "name": "Sunlight Original Dishwashing Liquid 750ml",
-     "fetched_at": "2026-11-20T10:15:52+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "washing-powder-2kg",
@@ -990,8 +756,7 @@
      "url": "https://www.checkers.co.za/product/omo-supersoak-hand-washing-powder-touch-of-comfort-2kg-10532233EA",
      "region": "national-online",
      "name": "OMO Supersoak Hand Washing Powder Touch Of Comfort 2kg",
-     "fetched_at": "2026-11-20T10:15:54+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:40+00:00"
     },
     "shoprite": {
      "price": 74.99,
@@ -1000,8 +765,7 @@
      "url": "https://www.shoprite.co.za/product/omo-supersoak-hand-washing-powder-touch-of-comfort-2kg-10532233EA",
      "region": "national-online",
      "name": "OMO Supersoak Hand Washing Powder Touch Of Comfort 2kg",
-     "fetched_at": "2026-11-20T10:15:55+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:40+00:00"
     }
    }
   },
@@ -1011,28 +775,7 @@
    "category": "Personal care",
    "barcode": "6162006600777",
    "canonical_name": "LUX Soft Caress Beauty Soap Bar 150g",
-   "prices": {
-    "checkers": {
-     "price": 19.99,
-     "regular_price": 19.99,
-     "in_stock": true,
-     "url": "https://www.checkers.co.za/product/lux-soft-caress-beauty-soap-bar-150g-10362095EA",
-     "region": "national-online",
-     "name": "LUX Soft Caress Beauty Soap Bar 150g",
-     "fetched_at": "2026-11-20T10:15:58+00:00",
-     "stale": true
-    },
-    "shoprite": {
-     "price": 19.99,
-     "regular_price": 19.99,
-     "in_stock": true,
-     "url": "https://www.shoprite.co.za/product/lux-soft-caress-beauty-soap-bar-150g-10362095EA",
-     "region": "national-online",
-     "name": "LUX Soft Caress Beauty Soap Bar 150g",
-     "fetched_at": "2026-11-20T10:15:58+00:00",
-     "stale": true
-    }
-   }
+   "prices": {}
   },
   {
    "id": "toothpaste-100ml",
@@ -1048,8 +791,7 @@
      "url": "https://www.checkers.co.za/product/colgate-herbal-fluoride-toothpaste-100ml-10142463EA",
      "region": "national-online",
      "name": "Colgate Herbal Fluoride Toothpaste 100ml",
-     "fetched_at": "2026-11-20T10:16:01+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:46+00:00"
     },
     "shoprite": {
      "price": 35.99,
@@ -1058,8 +800,7 @@
      "url": "https://www.shoprite.co.za/product/colgate-herbal-fluoride-toothpaste-100ml-10142463EA",
      "region": "national-online",
      "name": "Colgate Herbal Fluoride Toothpaste 100ml",
-     "fetched_at": "2026-11-20T10:16:01+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:47+00:00"
     }
    }
   },
@@ -1073,12 +814,12 @@
     "checkers": {
      "price": 329.99,
      "regular_price": 329.99,
+     "promo": "Buy 2 For R459.98",
      "in_stock": true,
      "url": "https://www.checkers.co.za/product/pampers-size-4-9-14kg-disposable-nappies-66-pack-10511187EA",
      "region": "national-online",
      "name": "Pampers Size 4 9-14kg Disposable Nappies 66 Pack",
-     "fetched_at": "2026-11-20T10:16:04+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:50+00:00"
     },
     "shoprite": {
      "price": 314.99,
@@ -1089,8 +830,7 @@
      "url": "https://www.shoprite.co.za/product/pampers-size-4-9-14kg-disposable-nappies-66-pack-10511187EA",
      "region": "national-online",
      "name": "Pampers Size 4 9-14kg Disposable Nappies 66 Pack",
-     "fetched_at": "2026-11-20T10:16:05+00:00",
-     "stale": true
+     "fetched_at": "2026-11-23T10:31:50+00:00"
     }
    }
   }
