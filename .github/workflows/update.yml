@@ -24,6 +24,10 @@ on:
         description: "Refresh store locations (normally Mondays)"
         type: boolean
         default: false
+      publish_only:
+        description: "Just rebuild and publish the site from saved data (no scraping, PC not needed)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -36,7 +40,7 @@ concurrency:
 
 jobs:
   scrape:
-    if: github.event_name != 'push'
+    if: github.event_name != 'push' && !inputs.publish_only
     runs-on: [self-hosted, basketwise]
     timeout-minutes: 300
     env:
