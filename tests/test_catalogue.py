@@ -28,6 +28,9 @@ class TestPrices(unittest.TestCase):
 
     def test_every_item_is_comparable_or_preset(self):
         preset = {p["id"] for p in self.doc.get("preset", [])}
+        idx_file = ROOT / "scraper" / "index_basket.json"
+        if idx_file.exists():  # standard-basket barcodes (and their alternatives) are kept even if one store has them
+            preset |= {i for slot in json.loads(idx_file.read_text(encoding="utf-8")) for i in slot["ids"]}
         for it in self.doc["items"]:
             self.assertTrue(len(it["prices"]) >= 2 or it["id"] in preset, it["id"])
 
