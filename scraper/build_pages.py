@@ -45,7 +45,8 @@ def pslug(it: dict) -> str:
 
 def fmt_date(iso: str | None) -> str:
     try:
-        return datetime.fromisoformat(iso).strftime("%-d %b %Y")
+        t = datetime.fromisoformat(iso)
+        return f"{t.day} {t:%b %Y}"  # portable: Windows strftime has no day-without-zero flag
     except (TypeError, ValueError):
         return ""
 
@@ -281,7 +282,8 @@ def main(out_dir: str) -> int:
         0), encoding="utf-8")
 
     wk = weekly(doc)
-    date = datetime.now(timezone.utc).strftime("%-d %B %Y")
+    t = datetime.now(timezone.utc)
+    date = f"{t.day} {t:%B %Y}"
     body, text = weekly_page(wk, date)
     (out / "weekly").mkdir(exist_ok=True)
     wpage = page(f"Grocery prices this week ({date}) | BasketWise",

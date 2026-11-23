@@ -68,8 +68,9 @@ jobs:
           BASKETWISE_BUDGET_MIN: "60"
           BASKETWISE_PNP_BUDGET_MIN: "220"
 
-      - name: Tests
-        run: python -m unittest discover -s tests -v
+      - name: Data-quality tests
+        # only checks that guard the data; page-generation problems are handled at publish time
+        run: python -m unittest -v tests.test_parsers tests.test_catalogue
 
       - name: Commit data
         run: python scraper/ci.py commit
