@@ -17,7 +17,7 @@ on:
   # App/page changes publish straight away on GitHub's servers, without waiting for the PC to scrape.
   push:
     branches: [main]
-    paths: ["site/**", "scraper/build_pages.py"]
+    paths: ["site/**", "scraper/build_pages.py", "data/prices.json", "scraper/index_basket.json"]
   workflow_dispatch:
     inputs:
       stores:
