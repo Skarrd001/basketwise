@@ -218,14 +218,16 @@ function km(a, b) {
   return 12742 * Math.asin(Math.sqrt(h));
 }
 
-function nearestStores() {
+// Nearest branch of every chain. withinMax=false also returns branches beyond the max distance,
+// flagged far:true, so a chain that prices your basket is never silently dropped.
+function nearestStores(withinMax = true) {
   const out = {};
   if (!S.loc) return out;
   const max = Number($("maxkm").value) || 20;
   for (const s of S.stores) {
     const d = km(S.loc, s);
-    if (d > max) continue;
-    if (!out[s.chain] || d < out[s.chain].d) out[s.chain] = { ...s, d };
+    if (withinMax && d > max) continue;
+    if (!out[s.chain] || d < out[s.chain].d) out[s.chain] = { ...s, d, far: d > max };
   }
   return out;
 }
@@ -261,14 +263,19 @@ function render() {
   if (!lines.length) { res.innerHTML = `<p class="hint">Add items to your basket to see where to shop.</p>`; drawStores({}); updateSticky(null); return; }
 
   const near = nearestStores();
+  const nearAll = nearestStores(false);
   drawStores(near);
   const haveStores = S.stores.length > 0 && S.loc;
   const chains = Object.keys(CHAINS).filter((c) => lines.some((l) => l.it.prices[c]));
 
   // Like-for-like: compare chains only on items EVERY compared chain prices. A chain is compared if it
   // has a store nearby and prices at least 60% of the basket; items outside the common set are listed.
-  const eligible = chains.filter((c) => (!haveStores || near[c]) &&
-    lines.filter((l) => l.it.prices[c]).length >= Math.max(1, Math.ceil(lines.length * 0.6)));
+  const enough = (c) => lines.filter((l) => l.it.prices[c]).length >= Math.max(1, Math.ceil(lines.length * 0.6));
+  let eligible = chains.filter((c) => (!haveStores || near[c]) && enough(c));
+  if (haveStores && eligible.length < 2) {
+    for (const c of chains) if (!near[c] && nearAll[c] && enough(c)) near[c] = nearAll[c];
+    eligible = chains.filter((c) => near[c] && enough(c));
+  }
   const common = lines.filter((l) => eligible.every((c) => l.it.prices[c]));
   const excluded = lines.filter((l) => !common.includes(l));
   const others = chains.filter((c) => !eligible.includes(c) && (!haveStores || near[c]));
@@ -317,11 +324,11 @@ function render() {
   const summary = chains.map((c) => {
     const have = lines.filter((l) => l.it.prices[c]);
     const goods = have.reduce((a, { it, qty }) => a + unitPrice(it.prices[c]).v * qty, 0);
-    const extra = delivery ? deliveryFee(c, goods).fee : (near[c] ? tripCost(near[c].d * ROAD_FACTOR * 2) : null);
+    const st = nearAll[c];
+    const extra = delivery ? deliveryFee(c, goods).fee : (st ? tripCost(st.d * ROAD_FACTOR * 2) : null);
     return { c, have: have.length, missing: lines.filter((l) => !l.it.prices[c]).map((l) => l.it.name),
-             goods, extra, total: goods + (extra || 0), st: near[c] };
-  }).filter((r) => !haveStores || delivery || r.st)
-    .sort((a, b) => a.missing.length - b.missing.length || a.total - b.total);
+             goods, extra, total: goods + (extra || 0), st };
+  }).sort((a, b) => a.missing.length - b.missing.length || a.total - b.total);
   S.summary = summary;
 
   let html = "";
@@ -331,7 +338,7 @@ function render() {
   if (summary.length) {
     const lo = Math.min(...summary.filter((r) => !r.missing.length).map((r) => r.total));
     html += `<h3 class="sub-h">Your basket at each store</h3><div class="scroll"><table class="sumtab"><thead><tr><th>Store</th><th>Items</th><th>Total</th></tr></thead><tbody>` +
-      summary.map((r) => `<tr class="${!r.missing.length && r.total === lo ? "best-row" : ""}"><td><span class="dot" style="background:${CHAINS[r.c].color}"></span> ${CHAINS[r.c].name}${r.st && !delivery ? `<small>${r.st.d.toFixed(1)} km</small>` : ""}</td>` +
+      summary.map((r) => `<tr class="${!r.missing.length && r.total === lo ? "best-row" : ""}"><td><span class="dot" style="background:${CHAINS[r.c].color}"></span> ${CHAINS[r.c].name}${r.st && !delivery ? `<small class="${r.st.far ? "warn" : ""}">${r.st.d.toFixed(1)} km${r.st.far ? " (further than your max distance)" : ""}</small>` : (!r.st && !delivery && S.loc ? `<small class="warn">no branch on our map</small>` : "")}</td>` +
         `<td>${r.have}/${lines.length}</td><td><b>${R(r.total)}</b><small>${R(r.goods)} groceries${r.extra === null ? "" : " + " + (r.extra === 0 && delivery ? "free delivery" : R(r.extra) + (delivery ? " delivery" : " travel"))}</small></td></tr>` +
         (r.missing.length ? `<tr class="miss"><td colspan="3">Not priced at ${CHAINS[r.c].name}: ${r.missing.map(esc).join(", ")}</td></tr>` : "")).join("") +
       `</tbody></table></div>`;
@@ -384,7 +391,7 @@ function otherStoresPanel(near, pricedChains) {
 
 function optCard(o, best, top) {
   const names = o.chains.map((c) => `<span class="dot" style="background:${CHAINS[c].color}"></span>${CHAINS[c].name}`).join(" + ");
-  const where = o.stores.map((s) => `${esc(s.name || "")}${s.suburb ? ", " + esc(s.suburb) : ""} (${s.d.toFixed(1)} km)`).join(" → ");
+  const where = o.stores.map((s) => `${esc(s.name || "")}${s.suburb ? ", " + esc(s.suburb) : ""} (${s.d.toFixed(1)} km${s.far ? `, <span class="warn">further than your max distance</span>` : ""})`).join(" → ");
   const extra = top && !best ? `<div class="save">+${R(o.total - top.total)}</div>` : best ? `<div class="save">Cheapest</div>` : "<div></div>";
   let line;
   if (o.delivery) {

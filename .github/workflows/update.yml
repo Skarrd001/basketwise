@@ -14,6 +14,10 @@ on:
   schedule:
     # 04:20 UTC = 06:20 SAST, every day. Inside PnP's robots.txt visit window (04:00-08:45 UTC).
     - cron: "20 4 * * *"
+  # App/page changes publish straight away on GitHub's servers, without waiting for the PC to scrape.
+  push:
+    branches: [main]
+    paths: ["site/**", "scraper/build_pages.py"]
   workflow_dispatch:
     inputs:
       stores:
@@ -32,6 +36,7 @@ concurrency:
 
 jobs:
   scrape:
+    if: github.event_name != 'push'
     runs-on: [self-hosted, basketwise]
     timeout-minutes: 300
     env:
