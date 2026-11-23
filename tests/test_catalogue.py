@@ -1,41 +1,35 @@
 """Data-quality gate: runs in CI after every scrape. A failing test fails the workflow and e-mails the owner."""
 import json
-import sys
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(ROOT / "scraper"))
-from common import parse_size  # noqa: E402
-
-
-class TestCatalogue(unittest.TestCase):
-    def setUp(self):
-        p = ROOT / "data" / "catalogue.json"
-        if not p.exists():
-            self.skipTest("no catalogue yet")
-        self.cat = json.loads(p.read_text())
-
-    def test_every_matched_product_has_the_basket_size(self):
-        for it in self.cat:
-            want = parse_size(it["name"])
-            for r, p in it["products"].items():
-                if want:
-                    self.assertEqual(parse_size(p["name"]), want, f"{it['id']} at {r}: {p['name']}")
 
 
 class TestPrices(unittest.TestCase):
-    def test_prices_are_sane(self):
+    def setUp(self):
         p = ROOT / "data" / "prices.json"
         if not p.exists():
             self.skipTest("no prices yet")
-        for it in json.loads(p.read_text())["items"]:
-            vals = [v["price"] for v in it["prices"].values()]
-            for v in vals:
-                self.assertGreater(v, 0, it["id"])
-            if len(vals) > 1:
-                # identical products shouldn't differ 3x between chains; if they do, a match is wrong
-                self.assertLess(max(vals) / min(vals), 3, f"{it['id']}: {it['prices']}")
+        self.doc = json.loads(p.read_text(encoding="utf-8"))
+
+    def test_prices_are_positive(self):
+        for it in self.doc["items"]:
+            for r, v in it["prices"].items():
+                self.assertGreater(v["price"], 0, f"{it['id']} at {r}")
+
+    def test_cross_retailer_mismatches_are_rare(self):
+        # Barcode-matched products shouldn't differ 3x between chains. A handful can (pack-size data
+        # errors on a retailer's side); many would mean our matching broke.
+        multi = [it for it in self.doc["items"] if len(it["prices"]) > 1]
+        bad = [it["id"] for it in multi
+               if max(p["price"] for p in it["prices"].values()) / min(p["price"] for p in it["prices"].values()) >= 3]
+        self.assertLess(len(bad), max(5, 0.01 * len(multi)), f"suspicious matches: {bad[:10]}")
+
+    def test_every_item_is_comparable_or_preset(self):
+        preset = {p["id"] for p in self.doc.get("preset", [])}
+        for it in self.doc["items"]:
+            self.assertTrue(len(it["prices"]) >= 2 or it["id"] in preset, it["id"])
 
 
 if __name__ == "__main__":

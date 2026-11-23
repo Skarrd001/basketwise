@@ -40,7 +40,7 @@
   </section>
 
   <section class="card wide">
-    <h2>Cheapest chain, by item (today)</h2>
+    <h2>Reference basket: cheapest chain per item</h2>
     <div id="cheapest" class="scroll"></div>
   </section>
 
@@ -61,24 +61,25 @@ async function boot(){
   const gen = new Date(prices.generated_at);
   const hrs = Math.round((Date.now()-gen)/36e5);
   const live = Object.values(prices.retailers).filter(h=>h.status==="ok"||h.status==="paused").length;
-  const reqs = Object.values(prices.retailers).reduce((a,h)=>a+(h.requests_ok||0),0);
+  const pnp = prices.retailers.pnp || {};
 
   document.getElementById("kpis").innerHTML = [
-    kpi(prices.item_count, "products tracked"),
+    kpi(prices.item_count.toLocaleString("en-ZA"), "products compared"),
     kpi(live+" / "+Object.keys(prices.retailers).length, "retailers live"),
     kpi((hrs<48?hrs+"h":Math.round(hrs/24)+"d")+" ago", "last update", hrs<36?"status-ok":"status-bad"),
-    kpi(reqs, "requests last run"),
+    kpi((pnp.mapped||0).toLocaleString("en-ZA"), "Pick n Pay products matched (grows daily)"),
     kpi(trends.dates.length, "days of history"),
   ].join("");
 
-  document.getElementById("retailers").innerHTML = `<table class="ops-t"><thead><tr><th>Retailer</th><th>Status</th><th>Coverage</th><th>Requests</th><th>Delivery</th></tr></thead><tbody>`+
+  document.getElementById("retailers").innerHTML = `<table class="ops-t"><thead><tr><th>Retailer</th><th>Status</th><th>Products priced</th><th>Today</th><th>Delivery</th></tr></thead><tbody>`+
     Object.entries(prices.retailers).map(([id,h])=>{
-      const pct = Math.round(100*(h.items_priced||0)/prices.item_count);
+      const pct = Math.round(100*(h.items_priced||0)/Math.max(1,prices.item_count));
+      const today = id==="pnp" ? `${h.refreshed||0} refreshed, ${h.discovered||0} new` : (h.catalogue_size!=null ? `${h.catalogue_size.toLocaleString("en-ZA")} in catalogue` : (h.specials_found!=null?`${h.specials_found} specials`:"–"));
       const d = h.delivery;
       return `<tr><td><span class="dot" style="background:${CHAIN_C[id]}"></span> ${esc(h.name)}</td>
         <td class="${["ok","paused","specials-only"].includes(h.status)?"status-ok":"status-bad"}">${esc(h.status)}</td>
-        <td style="min-width:120px">${h.items_priced}/${prices.item_count}<div class="bar"><span style="width:${pct}%"></span></div></td>
-        <td>${h.requests_ok}/${h.requests_tried}</td>
+        <td style="min-width:120px">${(h.items_priced||0).toLocaleString("en-ZA")}<div class="bar"><span style="width:${pct}%"></span></div></td>
+        <td>${today}</td>
         <td>${d?esc(d.service||"")+" "+(d.fee!=null?R(d.fee):"?")+(d.min_order?" (min "+R(d.min_order)+")":""):"–"}</td></tr>`;
     }).join("")+`</tbody></table>`;
 
@@ -86,12 +87,13 @@ async function boot(){
 
   const chains = Object.keys(CHAIN_C).filter(c=>prices.items.some(i=>i.prices[c]));
   let wins = {};
-  const rows = prices.items.map(it=>{
+  const ids = new Set((prices.preset||[]).map(p=>p.id));
+  const rows = prices.items.filter(it=>ids.has(it.id)).map(it=>{
     const entries = Object.entries(it.prices);
     if(!entries.length) return "";
     const lo = entries.reduce((a,b)=>b[1].price<a[1].price?b:a);
     wins[lo[0]]=(wins[lo[0]]||0)+1;
-    return `<tr><td>${esc(it.canonical_name||it.name)}</td>`+chains.map(c=>{
+    return `<tr><td>${esc(it.name)}</td>`+chains.map(c=>{
       const p=it.prices[c];
       return `<td class="${p&&p===lo[1]?"cheap":""}${p?"":" na"}">${p?R(p.price):"–"}</td>`;
     }).join("")+`</tr>`;
@@ -103,7 +105,7 @@ async function boot(){
   const problems = [];
   for(const [id,h] of Object.entries(prices.retailers)){
     if(h.status==="unavailable") problems.push(`<b>${esc(h.name)}</b> unavailable — ${esc(h.note)}`);
-    if(h.status==="partial") problems.push(`<b>${esc(h.name)}</b> only ${h.items_priced}/${prices.item_count} items — check the scraper.`);
+    if(h.status==="partial") problems.push(`<b>${esc(h.name)}</b> returned far fewer products than last time. Check the scraper log.`);
   }
   if(hrs>36) problems.push(`Data is ${Math.round(hrs/24)} days old — the daily job may be failing. Check GitHub Actions.`);
   document.getElementById("attention").innerHTML = problems.length

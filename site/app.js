@@ -11,13 +11,6 @@ const CHAINS = {
 };
 const ROAD_FACTOR = 1.3;      // straight line -> typical road distance
 const AVG_SPEED_KMH = 35;     // urban driving, for the time-cost option
-const PRESET = ["milk-2l", "eggs-18", "brown-bread", "white-bread", "maize-meal-10kg", "rice-2kg",
-  "sugar-2_5kg", "cake-flour-2_5kg", "sunflower-oil-2l", "pasta-500g", "baked-beans-410g",
-  "pilchards-400g", "peanut-butter-400g", "tomato-sauce-700ml", "tea-100", "coffee-200g",
-  "oats-1kg", "chicken-portions", "toilet-paper-9", "dishwashing-750ml", "washing-powder-2kg",
-  "bath-soap", "toothpaste-100ml", "butter-500g"];
-const PRESET_QTY = { "milk-2l": 4, "brown-bread": 4, "white-bread": 2, "baked-beans-410g": 3, "pilchards-400g": 2, "bath-soap": 3 };
-
 const S = {
   prices: null, stores: [], loc: null, basket: {}, marker: null, storeLayer: null, map: null,
 };
@@ -35,8 +28,10 @@ async function boot() {
     fetch("data/stores.json", { cache: "no-cache" }).then((r) => (r.ok ? r.json() : { stores: [] })).catch(() => ({ stores: [] })),
   ]);
   S.prices = prices;
+  S.byId = new Map(prices.items.map((i) => [i.id, i]));
+  for (const it of prices.items) it._hay = (it.name + " " + (it.brand || "") + " " + (it.category || "")).toLowerCase();
   S.stores = stores.stores || [];
-  S.basket = store.get("basket", {});
+  S.basket = Object.fromEntries(Object.entries(store.get("basket", {})).filter(([id]) => S.byId.has(id)));
   for (const id of ["fuel", "cons", "time", "maxkm"]) {
     const v = store.get(id, null);
     if (v !== null) $(id).value = v;
@@ -54,10 +49,11 @@ async function boot() {
   initMap();
   const loc = store.get("loc", null);
   if (loc) setLoc(loc.lat, loc.lon, false);
-  $("filter").addEventListener("input", renderItems);
+  let t;
+  $("filter").addEventListener("input", () => { clearTimeout(t); t = setTimeout(() => { S.cat = null; S.limit = 40; renderItems(); }, 120); });
   $("preset").addEventListener("click", () => {
     S.basket = {};
-    for (const id of PRESET) if (S.prices.items.some((i) => i.id === id)) S.basket[id] = PRESET_QTY[id] || 1;
+    for (const p of S.prices.preset || []) if (S.byId.has(p.id)) S.basket[p.id] = p.qty || 1;
     saveBasket();
   });
   $("clear").addEventListener("click", () => { S.basket = {}; saveBasket(); });
@@ -70,11 +66,11 @@ function renderFreshness() {
   const p = S.prices;
   const when = new Date(p.generated_at);
   const ago = Math.round((Date.now() - when) / 36e5);
-  const chips = [`<span class="chip">Prices updated ${ago < 1 ? "within the hour" : ago < 48 ? ago + "h ago" : when.toLocaleDateString("en-ZA")}</span>`];
+  const chips = [`<span class="chip">${p.item_count.toLocaleString("en-ZA")} products</span>`, `<span class="chip">Prices updated ${ago < 1 ? "within the hour" : ago < 48 ? ago + "h ago" : when.toLocaleDateString("en-ZA")}</span>`];
   for (const [id, h] of Object.entries(p.retailers)) {
     const good = h.status === "ok" || h.status === "paused";
-    const label = h.status === "ok" ? `${h.items_priced} items`
-      : h.status === "paused" ? `${h.items_priced || "recent"} items (updating soon)`
+    const label = h.status === "ok" ? `${h.items_priced.toLocaleString("en-ZA")} items`
+      : h.status === "paused" ? `${(h.items_priced || 0).toLocaleString("en-ZA")} items (refreshing daily)`
       : h.status === "specials-only" ? "specials only" : "unavailable";
     chips.push(`<span class="chip ${good ? "ok" : "bad"}" title="${esc(h.note)}">${esc(h.name)}: ${label}</span>`);
   }
@@ -82,33 +78,59 @@ function renderFreshness() {
   $("coverage").innerHTML = Object.values(p.retailers).map((h) => `<b>${esc(h.name)}:</b> ${esc(h.note)}`).join("<br>");
 }
 
+function itemRow(it) {
+  const n = S.basket[it.id] || 0;
+  const vals = Object.entries(it.prices);
+  const lo = Math.min(...vals.map(([, p]) => p.price));
+  const where = vals.length + (vals.length === 1 ? " store" : " stores");
+  return `<div class="item ${n ? "on" : ""}">
+    <div class="nm">${esc(it.name)}<small>${esc(it.category || "")} · from ${R(lo)} · ${where}</small></div>
+    <div class="qty"><button data-id="${it.id}" data-d="-1" aria-label="Remove one">−</button><span>${n}</span><button data-id="${it.id}" data-d="1" aria-label="Add one">+</button></div>
+  </div>`;
+}
+
 function renderItems() {
   const q = $("filter").value.trim().toLowerCase();
-  const byCat = {};
-  for (const it of S.prices.items) {
-    if (!Object.keys(it.prices).length) continue;
-    const hay = (it.name + " " + (it.canonical_name || "") + " " + it.category).toLowerCase();
-    if (q && !hay.includes(q)) continue;
-    (byCat[it.category] ||= []).push(it);
-  }
+  const words = q.split(/\s+/).filter(Boolean);
+  const limit = S.limit || 40;
   let html = "";
-  for (const [cat, items] of Object.entries(byCat)) {
-    html += `<div class="cat">${esc(cat)}</div>`;
-    for (const it of items) {
-      const n = S.basket[it.id] || 0;
-      const lo = Math.min(...Object.values(it.prices).map((p) => p.price));
-      html += `<div class="item ${n ? "on" : ""}">
-        <div class="nm">${esc(it.name)}<small>${esc(it.canonical_name || "")} · from ${R(lo)}</small></div>
-        <div class="qty"><button data-id="${it.id}" data-d="-1" aria-label="Remove one">−</button><span>${n}</span><button data-id="${it.id}" data-d="1" aria-label="Add one">+</button></div>
-      </div>`;
-    }
+  const inBasket = Object.keys(S.basket).map((id) => S.byId.get(id)).filter(Boolean);
+  if (inBasket.length && !q && !S.cat) {
+    html += `<div class="cat">In your basket (${inBasket.length})</div>` + inBasket.map(itemRow).join("");
   }
-  $("items").innerHTML = html || `<p class="hint">No items match.</p>`;
+  if (words.length) {
+    const hits = S.prices.items.filter((it) => words.every((w) => it._hay.includes(w)));
+    // items whose name starts with the query word rank first, then the most widely stocked
+    hits.sort((a, b) => (b.name.toLowerCase().startsWith(words[0]) - a.name.toLowerCase().startsWith(words[0]))
+      || (Object.keys(b.prices).length - Object.keys(a.prices).length) || a.name.length - b.name.length);
+    html += `<div class="cat">${hits.length.toLocaleString("en-ZA")} match${hits.length === 1 ? "" : "es"}</div>` +
+      hits.slice(0, limit).map(itemRow).join("") +
+      (hits.length > limit ? `<button class="btn ghost more" data-more="1">Show more</button>` : "");
+    if (!hits.length) html += `<p class="hint">Nothing matches "${esc(q)}". Try one word, like "milk" or "sunlight".</p>`;
+  } else if (S.cat) {
+    const list = S.prices.items.filter((it) => it.category === S.cat);
+    html += `<div class="cat"><button class="btn ghost" data-cat="">← All categories</button> ${esc(S.cat)} (${list.length.toLocaleString("en-ZA")})</div>` +
+      list.slice(0, limit).map(itemRow).join("") +
+      (list.length > limit ? `<button class="btn ghost more" data-more="1">Show more</button>` : "");
+  } else {
+    const counts = {};
+    for (const it of S.prices.items) counts[it.category] = (counts[it.category] || 0) + 1;
+    html += `<div class="cat">Browse by category, or search above</div><div class="cats">` +
+      Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([c, n]) =>
+        `<button class="chip catbtn" data-cat="${esc(c)}">${esc(c)} <b>${n.toLocaleString("en-ZA")}</b></button>`).join("") + `</div>`;
+  }
+  $("items").innerHTML = html;
   $("items").querySelectorAll("button[data-id]").forEach((b) => b.addEventListener("click", () => {
     const id = b.dataset.id;
     S.basket[id] = Math.max(0, (S.basket[id] || 0) + Number(b.dataset.d));
     if (!S.basket[id]) delete S.basket[id];
     saveBasket();
+  }));
+  $("items").querySelectorAll("button[data-cat]").forEach((b) => b.addEventListener("click", () => {
+    S.cat = b.dataset.cat || null; S.limit = 40; renderItems(); $("items").scrollTop = 0;
+  }));
+  $("items").querySelectorAll("button[data-more]").forEach((b) => b.addEventListener("click", () => {
+    S.limit = (S.limit || 40) + 60; renderItems();
   }));
 }
 
@@ -207,7 +229,7 @@ function deliveryFee(chain, goods) {
 }
 
 function render() {
-  const lines = Object.entries(S.basket).map(([id, qty]) => ({ it: S.prices.items.find((i) => i.id === id), qty })).filter((l) => l.it);
+  const lines = Object.entries(S.basket).map(([id, qty]) => ({ it: S.byId.get(id), qty })).filter((l) => l.it);
   renderBreakdown(lines);
   const res = $("results");
   if (!lines.length) { res.innerHTML = `<p class="hint">Add items to your basket to see where to shop.</p>`; drawStores({}); return; }
@@ -314,11 +336,11 @@ function renderBreakdown(lines) {
   for (const { it, qty } of lines) {
     const vals = chains.map((c) => (it.prices[c] ? unitPrice(it.prices[c]) : null));
     const lo = Math.min(...vals.filter(Boolean).map((v) => v.v));
-    h += `<tr><td>${esc(it.canonical_name || it.name)}</td><td>${qty}</td>` + chains.map((c, k) => {
+    h += `<tr><td>${esc(it.name)}</td><td>${qty}</td>` + chains.map((c, k) => {
       const v = vals[k]; const p = it.prices[c];
       if (!v) return `<td class="na">–</td>`;
-      const stale = p.stale ? ` title="Price from ${new Date(p.fetched_at).toLocaleDateString("en-ZA")}"` : "";
-      return `<td class="${v.v === lo ? "cheap" : ""}"${stale}><a href="${esc(p.url)}" target="_blank" rel="noopener nofollow">${R(v.v)}</a>${p.promo ? `<span class="promo" title="${esc(p.promo)}">${esc(p.promo.length > 40 ? p.promo.slice(0, 38) + "…" : p.promo)}</span>` : ""}</td>`;
+      const when = p.stale && p.fetched_at ? new Date(p.fetched_at).toLocaleDateString("en-ZA", { day: "numeric", month: "short" }) : "";
+      return `<td class="${v.v === lo ? "cheap" : ""}"><a href="${esc(p.url || "#")}" target="_blank" rel="noopener nofollow">${R(v.v)}</a>${p.promo ? `<span class="promo" title="${esc(p.promo)}">${esc(p.promo.length > 40 ? p.promo.slice(0, 38) + "…" : p.promo)}</span>` : ""}${when ? `<span class="dated" title="Last checked ${when}; refreshes on a rolling basis">from ${when}</span>` : ""}</td>`;
     }).join("") + `</tr>`;
   }
   h += `</tbody></table>`;

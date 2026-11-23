@@ -11,8 +11,9 @@ getting there. It also suggests a two-store "split shop" when that comes out che
 ```
 GitHub Actions, daily 04:20 UTC (06:20 SAST)
   ├─ Mondays:  scraper/stores.py    → data/stores.json     (OpenStreetMap, ~3,000 stores)
-  ├─ Sundays:  scraper/discover.py  → data/catalogue.json  (re-match products by barcode)
-  ├─ daily:    scraper/run.py       → data/prices.json, data/history/<date>.json
+  ├─ daily:    scraper/run.py       → data/prices.json (thousands of products), data/pnp_map.json
+  │             Checkers + Shoprite: whole grocery range, 100 products/request (~15 min)
+  │             Pick n Pay: rolling refresh + new barcode matches inside its robots.txt window
   ├─ tests
   ├─ commit data back to the repo   (the price history is the long-term asset)
   └─ deploy site/ + data to GitHub Pages
@@ -48,14 +49,13 @@ python -m unittest discover -s tests
 ln -sfn ../data site/data && python -m http.server -d site 8000
 ```
 
-## Adding products
+## How the catalogue grows
 
-Add an entry to `scraper/basket.json`:
-- `tokens` are words that must all appear in the product's URL slug.
-- Use `ck` / `pnp` overrides where the retailers word things differently.
-- `exclude` lists words that must not appear.
-
-Then run `discover.py <id>` and check `data/catalogue_review.json`.
+Products are matched across retailers by **barcode**. Checkers and Shoprite are fully refreshed every
+day. Pick n Pay only allows one request every 10 seconds, early mornings only, so each run spends its
+window refreshing the oldest PnP prices and matching new products. PnP coverage grows daily, and
+every price that isn't from today is shown with its date. Departments included are listed in
+`GROCERY_DEPARTMENTS` in `scraper/retailers.py`. The "Monthly family shop" preset is `scraper/preset.json`.
 
 ## Before you launch
 

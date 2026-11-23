@@ -16,10 +16,6 @@ on:
     - cron: "20 4 * * *"
   workflow_dispatch:
     inputs:
-      discover:
-        description: "Re-run product matching (normally Sundays)"
-        type: boolean
-        default: false
       stores:
         description: "Refresh store locations (normally Mondays)"
         type: boolean
@@ -37,7 +33,7 @@ concurrency:
 jobs:
   scrape:
     runs-on: [self-hosted, basketwise]
-    timeout-minutes: 120
+    timeout-minutes: 300
     env:
       PYTHONUTF8: "1"   # Windows defaults to cp1252; product names include characters like É and ×
     steps:
@@ -51,7 +47,6 @@ jobs:
         id: plan
         env:
           IN_STORES: ${{ inputs.stores }}
-          IN_DISCOVER: ${{ inputs.discover }}
         run: python scraper/ci.py plan
 
       - name: Refresh store locations (Mondays)
@@ -61,23 +56,17 @@ jobs:
         timeout-minutes: 15
         run: python stores.py
 
-      - name: Re-match products (Sundays)
-        if: steps.plan.outputs.discover == 'true'
-        working-directory: scraper
-        continue-on-error: true
-        timeout-minutes: 40
-        env:
-          BASKETWISE_BUDGET_MIN: "35"
-        run: python discover.py
-
       - name: Fetch today's prices
         id: prices
         working-directory: scraper
         run: python run.py
         continue-on-error: true
-        timeout-minutes: 50
+        # Checkers + Shoprite take ~15 min; Pick n Pay then runs until its robots.txt window closes
+        # (08:45 UTC) or its budget is used, saving progress every 5 minutes.
+        timeout-minutes: 250
         env:
-          BASKETWISE_BUDGET_MIN: "40"
+          BASKETWISE_BUDGET_MIN: "60"
+          BASKETWISE_PNP_BUDGET_MIN: "220"
 
       - name: Tests
         run: python -m unittest discover -s tests -v

@@ -247,3 +247,94 @@ def _walk_spar_table(table) -> list[dict]:
             "fetched_at": now(),
         })
     return out
+
+
+# ---------------------------------------------------------------- Checkers / Shoprite: bulk catalogue
+# The category listing on checkers.co.za / shoprite.co.za loads its products from this endpoint in every
+# visitor's browser: 100 products per request, each with barcode and price. Far gentler than one request
+# per product page.
+GROCERY_DEPARTMENTS = {
+    "baby", "bakery", "beverages-juices-and-cordials", "coffee-tea-and-hot-drinks", "deli-and-chilled-meats",
+    "fish-and-seafood", "food-cupboard", "frozen-foods", "fruit-veg-and-salads", "household-and-cleaning",
+    "meat-and-poultry", "milk-dairy-and-eggs", "ready-meals-and-desserts", "sweets-and-snacks", "toiletries", "pets",
+}
+BULK_PAGE = 100
+
+
+def list_departments(f: Fetcher, retailer: str) -> list[tuple[str, str]]:
+    """(slug, id) of the grocery level-1 departments, read fresh from the public category sitemap."""
+    dom = RETAILERS[retailer]["domain"]
+    r = f.get(f"https://{dom}/api/sitemaps/display-category-sitemap_{retailer}.xml")
+    if not r:
+        return []
+    out = []
+    for u in re.findall(r"<loc>([^<]+)</loc>", r.text):
+        m = re.search(r"/department/([a-z0-9-]+)-1-([0-9a-f]{24})$", u.strip())
+        if m and m.group(1) in GROCERY_DEPARTMENTS:
+            out.append((m.group(1), m.group(2)))
+    return out
+
+
+def _bulk_body(dept_id: str, page: int) -> dict:
+    return {"storeContexts": [], "forYouBonusBuyIds": [], "filterData": {
+        "displayOptions": {"includeDisplayCategoryTree": False},
+        "filter": {"showAllDisplayVariants": False, "showNotRangedProducts": False, "sortOptions": None,
+                   "productListSource": {"displayCategory": {"id": dept_id, "level": 1, "name": ""}},
+                   "paginationOptions": {"page": page, "pageSize": BULK_PAGE},
+                   "filterOptions": {"dealsOnly": False, "brandOptions": [], "departmentOptions": [],
+                                     "serviceOptions": [], "facetOptions": []}}}}
+
+
+def product_slug(name: str) -> str:
+    s = name.lower().replace("&", " and ").replace("'", "").replace(".", "")
+    return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
+
+
+def fetch_catalogue_bulk(f: Fetcher, retailer: str, log=None) -> tuple[list[dict], dict]:
+    """Every grocery product at Checkers/Shoprite. Returns (records, stats)."""
+    dom = RETAILERS[retailer]["domain"]
+    url = f"https://{dom}/api/catalogue/get-products-filter"
+    recs: dict[str, dict] = {}
+    stats = {"departments": 0, "requests": 0, "expected": 0}
+    for slug, dept_id in list_departments(f, retailer):
+        stats["departments"] += 1
+        page, total = 0, None
+        while total is None or page * BULK_PAGE < total:
+            r = f.post_json(url, _bulk_body(dept_id, page))
+            stats["requests"] += 1
+            if not r:
+                break
+            try:
+                j = r.json()
+            except ValueError:
+                break
+            total = j.get("totalCount") or 0
+            if page == 0:
+                stats["expected"] += total
+            for p in j.get("products") or []:
+                rec = _bulk_record(retailer, p, slug)
+                if rec:
+                    recs.setdefault(rec["barcode"], rec)
+            if not j.get("products"):
+                break
+            page += 1
+        if log:
+            log.info("%s %s: %s products so far", retailer, slug, len(recs))
+    return list(recs.values()), stats
+
+
+def _bulk_record(retailer: str, p: dict, dept: str) -> dict | None:
+    bcs = p.get("barcodes") or []
+    price = p.get("discountedPrice") or p.get("price")
+    if not bcs or not price or float(price) <= 0 or p.get("outOfStock"):
+        return None
+    name = (p.get("displayName") or p.get("name") or "").strip()
+    promo = ((p.get("bonusBuy") or {}).get("name") or "").strip() or None
+    art, uom = p.get("articleNumber") or "", p.get("unitOfMeasure") or "EA"
+    return {
+        "retailer": retailer, "barcode": str(bcs[0]), "barcodes": [str(b) for b in bcs], "name": name,
+        "brand": p.get("brand"), "department": dept, "product_id": art,
+        "price": float(price), "promo": promo, "promo_price": _promo_price(promo),
+        "url": f"https://{RETAILERS[retailer]['domain']}/product/{product_slug(name)}-{art}{uom}",
+        "fetched_at": now(),
+    }

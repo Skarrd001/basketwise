@@ -88,7 +88,12 @@ class Fetcher:
             time.sleep(delay - elapsed + random.uniform(0, 0.5))
         self.last[host] = time.time()
 
-    def get(self, url: str, *, accept_json: bool = False, retries: int = 3, check_robots: bool = True) -> requests.Response | None:
+    def post_json(self, url: str, body: dict, **kw) -> requests.Response | None:
+        """POST a JSON body (the same call a retailer's own web page makes), with all the same politeness."""
+        return self.get(url, accept_json=True, json_body=body, **kw)
+
+    def get(self, url: str, *, accept_json: bool = False, retries: int = 3, check_robots: bool = True,
+            json_body: dict | None = None) -> requests.Response | None:
         if check_robots and not self._robots_ok(url):
             log.warning("robots.txt disallows %s - skipped", url)
             return None
@@ -112,7 +117,10 @@ class Fetcher:
                 return None
             self._wait(host)
             try:
-                r = self.s.get(url, timeout=25, headers=headers)
+                if json_body is not None:
+                    r = self.s.post(url, json=json_body, timeout=40, headers=headers)
+                else:
+                    r = self.s.get(url, timeout=25, headers=headers)
                 self.requests_made += 1
             except requests.TooManyRedirects:
                 log.warning("GET %s redirect loop (bot block page) - not retrying", url)
