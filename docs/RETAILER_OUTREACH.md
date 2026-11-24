@@ -88,9 +88,12 @@ Sources: [Shoprite PAIA manual](https://cdn.prod.website-files.com/61108ec55659c
 
 | Company | Sent | To | Reply | Outcome |
 |---|---|---|---|---|
-| Shoprite Holdings | | | | |
-| Pick n Pay Stores | | | | |
-| The SPAR Group | | | | |
-| Woolworths Holdings | | | | |
-| Food Lover's Market | | | | |
-| Massmart (Makro) | | | | |
+| Shoprite Holdings | 2026-11-24 | cosec@shoprite.co.za | | Delivered (no bounce). Follow up 2026-12-08; also phone 021 980 4000 |
+| Pick n Pay Stores | 2026-11-24 | companysecretary@pnp.co.za, cc customercare@pnp.co.za | | Delivered (no bounce). Follow up 2026-12-08 |
+| The SPAR Group | 2026-11-24 | intcontact@spar.co.za | | cc Nonganga@spar.co.za **bounced** (address rejected). Main address delivered |
+| Woolworths Holdings | 2026-11-24 | pressoffice@woolworths.co.za | | Delivered (no bounce) |
+| Food Lover's Market | 2026-11-24 | care@fnv.co.za | | Delivered (no bounce) |
+| Massmart (Makro) | 2026-11-24 | mediaenquiries@massmart.co.za, cc info@makro.co.za | | Sent to the address **without the dot**; published address is media.enquiries@massmart.co.za. Resend there if no reply |
+
+Notes on the 2026-11-24 send: sent from a Bluestone Property mailbox, signed with name only; the BasketWise
+link appears as a google.com/url redirect (copied from Gmail). Use a plain link in any follow-up.
