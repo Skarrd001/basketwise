@@ -94,7 +94,7 @@ Sources: [Shoprite PAIA manual](https://cdn.prod.website-files.com/61108ec55659c
 | The SPAR Group | 2026-11-24 | intcontact@spar.co.za | | cc Nonganga@spar.co.za **bounced** (address rejected). Main address delivered |
 | Woolworths Holdings | 2026-11-24 | pressoffice@woolworths.co.za | | Delivered (no bounce) |
 | Food Lover's Market | 2026-11-24 | care@fnv.co.za | | Delivered (no bounce) |
-| Massmart (Makro) | 2026-11-24 | mediaenquiries@massmart.co.za, cc info@makro.co.za | | Sent to the address **without the dot**; published address is media.enquiries@massmart.co.za. Resend there if no reply |
+| Massmart (Makro) | 2026-11-24 | mediaenquiries@massmart.co.za, cc info@makro.co.za | | First send went to the address without the dot. **Resent 2026-11-24 to media.enquiries@massmart.co.za** (plain link, full signature); no bounce |
 
 Notes on the 2026-11-24 send: sent from a Bluestone Property mailbox, signed with name only; the BasketWise
 link appears as a google.com/url redirect (copied from Gmail). Use a plain link in any follow-up.
