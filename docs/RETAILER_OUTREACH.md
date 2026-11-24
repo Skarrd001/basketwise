@@ -89,6 +89,7 @@ Sources: [Shoprite PAIA manual](https://cdn.prod.website-files.com/61108ec55659c
 | Company | Sent | To | Reply | Outcome |
 |---|---|---|---|---|
 | Shoprite Holdings | 2026-11-24 | cosec@shoprite.co.za | | Delivered (no bounce). Follow up 2026-12-08; also phone 021 980 4000 |
+| ShopriteX (partner form) | 2026-11-24 | shopritex.co.za partner form, with pitch PDF | | Submitted. **Reference SRX-22627767.** Category: partnership; eCommerce & Delivery, co-innovation, Core Retail Platform |
 | Pick n Pay Stores | 2026-11-24 | companysecretary@pnp.co.za, cc customercare@pnp.co.za | | Delivered (no bounce). Follow up 2026-12-08 |
 | The SPAR Group | 2026-11-24 | intcontact@spar.co.za | | cc Nonganga@spar.co.za **bounced** (address rejected). Main address delivered |
 | Woolworths Holdings | 2026-11-24 | pressoffice@woolworths.co.za | | Delivered (no bounce) |
