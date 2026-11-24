@@ -17,7 +17,7 @@
 <body>
 <header class="top">
   <div class="wrap">
-    <h1>BasketWise</h1>
+    <div class="topbar"><h1>BasketWise</h1><button id="account-btn" class="btn" type="button" hidden>Sign in</button></div>
     <p class="tag">The cheapest shop <em>including the drive there</em>.</p>
     <div id="freshness" class="fresh"></div>
     <p class="fresh" style="margin-top:6px"><a href="weekly/">📰 This week's prices &amp; best deals</a> · <a href="products.html">Browse all products</a></p>
@@ -77,6 +77,8 @@
     <div id="results"><p class="hint">Set your location and add items to see results.</p></div>
   </section>
 
+  <section class="card wide" data-bw-subscribe="app" hidden></section>
+
   <section class="card wide">
     <h2>Price by item</h2>
     <div id="breakdown" class="scroll"></div>
@@ -91,7 +93,10 @@
 
 <div id="sticky" class="sticky" hidden></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="config.js"></script>
 <script src="app.js"></script>
+<script src="account.js"></script>
+<script src="subscribe.js"></script>
 <script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});</script>
 </body>
 </html>

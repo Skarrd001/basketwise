@@ -160,7 +160,7 @@ function renderItems() {
   }));
 }
 
-function saveBasket() { store.set("basket", S.basket); renderItems(); render(); }
+function saveBasket() { store.set("basket", S.basket); renderItems(); render(); if (window.BWAccount) window.BWAccount.basketChanged(); }
 
 /* ------------------------------------------------------------------ map & location */
 function initMap() {
@@ -463,7 +463,7 @@ function renderBreakdown(lines) {
   for (const { it, qty } of lines) {
     const vals = chains.map((c) => (it.prices[c] ? unitPrice(it.prices[c]) : null));
     const lo = Math.min(...vals.filter(Boolean).map((v) => v.v));
-    h += `<tr><td>${esc(it.name)}</td><td>${qty}</td>` + chains.map((c, k) => {
+    h += `<tr data-id="${esc(it.id)}"><td>${esc(it.name)}</td><td>${qty}</td>` + chains.map((c, k) => {
       const v = vals[k]; const p = it.prices[c];
       if (!v) return `<td class="na">–</td>`;
       const when = p.stale && p.fetched_at ? new Date(p.fetched_at).toLocaleDateString("en-ZA", { day: "numeric", month: "short" }) : "";
@@ -472,6 +472,7 @@ function renderBreakdown(lines) {
   }
   h += `</tbody></table>`;
   el.innerHTML = h;
+  if (window.BWAccount) window.BWAccount.decorate();
 }
 
 function drawStores(near) {
