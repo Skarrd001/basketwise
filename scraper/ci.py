@@ -15,12 +15,42 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 
+PNP_WINDOW_UTC = (400, 845)  # Pick n Pay's robots.txt Visit-time
+
+
+def already_done_today() -> bool:
+    """A scheduled run is skipped if today's prices are already saved: Checkers/Shoprite refreshed today and
+    Pick n Pay either refreshed today or no longer reachable today (its window has closed)."""
+    import json
+    p = ROOT / "data" / "prices.json"
+    if not p.exists():
+        return False
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+    except ValueError:
+        return False
+    now = datetime.now(timezone.utc)
+    if d.get("generated_at", "")[:10] != now.strftime("%Y-%m-%d"):
+        return False
+    r = d.get("retailers", {})
+    if r.get("checkers", {}).get("status") != "ok" or r.get("shoprite", {}).get("status") != "ok":
+        return False
+    pnp_window_open = PNP_WINDOW_UTC[0] <= int(now.strftime("%H%M")) <= PNP_WINDOW_UTC[1]
+    return r.get("pnp", {}).get("status") == "ok" or not pnp_window_open
+
+
 def plan() -> None:
     dow = datetime.now(timezone.utc).isoweekday()  # 1=Mon .. 7=Sun
     stores = dow == 1 or not (ROOT / "data" / "stores.json").exists() or os.environ.get("IN_STORES") == "true"
     discover = dow == 7 or os.environ.get("IN_DISCOVER") == "true"
+    # The schedule fires several times each morning (GitHub's cron can be hours late, and the PC may
+    # wake late); later runs skip once the day's prices are in. Manual runs never skip.
+    skip = os.environ.get("GITHUB_EVENT_NAME") == "schedule" and already_done_today()
+    if skip:
+        stores = discover = False
     out = os.environ.get("GITHUB_OUTPUT")
-    lines = f"stores={'true' if stores else 'false'}\ndiscover={'true' if discover else 'false'}\n"
+    lines = (f"stores={'true' if stores else 'false'}\ndiscover={'true' if discover else 'false'}\n"
+             f"skip={'true' if skip else 'false'}\n")
     if out:
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(lines)

@@ -12,8 +12,10 @@ name: Update prices and deploy
 
 on:
   schedule:
-    # 04:20 UTC = 06:20 SAST, every day. Inside PnP's robots.txt visit window (04:00-08:45 UTC).
-    - cron: "20 4 * * *"
+    # 06:20, 07:20, 08:20 and 09:20 SAST, inside PnP's robots.txt visit window (04:00-08:45 UTC).
+    # GitHub's scheduler can fire hours late and the PC may wake late, so there are four chances;
+    # once the day's prices are saved, the later runs skip themselves (scraper/ci.py plan).
+    - cron: "20 4,5,6,7 * * *"
   # App/page changes publish straight away on GitHub's servers, without waiting for the PC to scrape.
   push:
     branches: [main]
@@ -67,6 +69,7 @@ jobs:
 
       - name: Fetch today's prices
         id: prices
+        if: steps.plan.outputs.skip != 'true'
         working-directory: scraper
         run: python run.py
         continue-on-error: true
@@ -79,9 +82,10 @@ jobs:
 
       - name: Data-quality tests
         # only checks that guard the data; page-generation problems are handled at publish time
-        run: python -m unittest -v tests.test_parsers tests.test_catalogue
+        run: python -m unittest -v tests.test_parsers tests.test_catalogue tests.test_ci
 
       - name: Commit data
+        if: steps.plan.outputs.skip != 'true'
         run: python scraper/ci.py commit
 
       - name: Fail loudly if a retailer broke
