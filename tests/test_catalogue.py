@@ -26,13 +26,9 @@ class TestPrices(unittest.TestCase):
                if max(p["price"] for p in it["prices"].values()) / min(p["price"] for p in it["prices"].values()) >= 3]
         self.assertLess(len(bad), max(5, 0.01 * len(multi)), f"suspicious matches: {bad[:10]}")
 
-    def test_every_item_is_comparable_or_preset(self):
-        preset = {p["id"] for p in self.doc.get("preset", [])}
-        idx_file = ROOT / "scraper" / "index_basket.json"
-        if idx_file.exists():  # standard-basket barcodes (and their alternatives) are kept even if one store has them
-            preset |= {i for slot in json.loads(idx_file.read_text(encoding="utf-8")) for i in slot["ids"]}
+    def test_every_item_has_a_price(self):
         for it in self.doc["items"]:
-            self.assertTrue(len(it["prices"]) >= 2 or it["id"] in preset, it["id"])
+            self.assertTrue(it["prices"], it["id"])
 
 
 if __name__ == "__main__":

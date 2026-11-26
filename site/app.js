@@ -108,7 +108,7 @@ function itemRow(it) {
   const n = S.basket[it.id] || 0;
   const vals = Object.entries(it.prices);
   const lo = Math.min(...vals.map(([, p]) => p.price));
-  const where = vals.length + (vals.length === 1 ? " store" : " stores");
+  const where = vals.length === 1 ? `only at ${CHAINS[vals[0][0]] ? CHAINS[vals[0][0]].name : vals[0][0]}` : `${vals.length} stores`;
   return `<div class="item ${n ? "on" : ""}">
     <div class="nm">${esc(it.name)}<small>${esc(it.category || "")} · from ${R(lo)} · ${where}</small></div>
     <div class="qty"><button data-id="${it.id}" data-d="-1" aria-label="Remove one">−</button><span>${n}</span><button data-id="${it.id}" data-d="1" aria-label="Add one">+</button></div>

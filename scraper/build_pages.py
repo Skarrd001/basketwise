@@ -255,7 +255,8 @@ def share_image(wk: dict, date: str, out: Path) -> bool:
 def main(out_dir: str) -> int:
     out = Path(out_dir)
     doc = json.loads((DATA / "prices.json").read_text(encoding="utf-8"))
-    items = [i for i in doc["items"] if len(i["prices"]) >= 1]
+    # SEO pages only for products we can actually compare (2+ stores): single-store pages would be thin.
+    items = [i for i in doc["items"] if len(i["prices"]) >= 2]
     gen = doc["generated_at"][:10]
     urls = [(BASE, gen), (BASE + "products.html", gen), (BASE + "weekly/", gen)]
     by_cat: dict[str, list] = {}

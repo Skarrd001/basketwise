@@ -146,10 +146,11 @@ def main() -> int:
                                             "category": old.get("category"), "barcodes": {cid}, "prices": {}})
                 it["prices"].setdefault(r, {**p, "stale": True})
 
-    # Keep products that at least two retailers price (comparable), plus the preset and standard baskets.
+    # Keep every product any retailer prices. Products sold at only one chain can't be compared, but they
+    # still count towards that store's basket total, and the app marks them "only at <store>".
     out_items = []
     for it in items.values():
-        if len(it["prices"]) >= 2 or it["id"] in keep_ids:
+        if it["prices"] or it["id"] in keep_ids:
             out_items.append({"id": it["id"], "name": it["name"], "brand": it.get("brand"),
                               "category": it.get("category"), "prices": it["prices"]})
     out_items.sort(key=lambda i: (i.get("category") or "", i["name"]))
