@@ -98,3 +98,10 @@ Sources: [Shoprite PAIA manual](https://cdn.prod.website-files.com/61108ec55659c
 
 Notes on the 2026-11-24 send: sent from a Bluestone Property mailbox, signed with name only; the BasketWise
 link appears as a google.com/url redirect (copied from Gmail). Use a plain link in any follow-up.
+
+**2026-11-26: tailored proposal decks sent** as replies in each original thread (PDF attached), after the
+ShopriteX proposal was submitted. Pick n Pay to CompanySecretary@ only (customer care had closed the first
+email as Zendesk ticket 2171546 without passing it on); SPAR without the bounced cc; Makro to
+media.enquiries@massmart.co.za. No bounces. Pick n Pay's deck leads with "without loyalty cards, Pick n Pay
+is the cheapest basket"; the others with "shoppers near your stores can't see you in the comparison yet".
+
