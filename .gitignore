@@ -3,3 +3,4 @@ __pycache__/
 site/data
 _site/
 .DS_Store
+data/.bulk_cache.json

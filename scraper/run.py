@@ -48,7 +48,16 @@ def label(dept: str) -> str:
     return dept.replace("-and-", " & ").replace("-", " ").capitalize()
 
 
-def main() -> int:
+BULK_CACHE = DATA / ".bulk_cache.json"   # Checkers/Shoprite results, handed from the first step to the second
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Modes:  (default) everything in one go
+               --no-pnp    Checkers, Shoprite, SPAR, Woolworths only, then save  (~15 min)
+               --pnp-only  Pick n Pay only, reusing today's Checkers/Shoprite list, then save
+    Splitting means a PC that drops off mid-way loses only the step it was on."""
+    argv = sys.argv[1:] if argv is None else argv
+    no_pnp, pnp_only = "--no-pnp" in argv, "--pnp-only" in argv
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(threadName)s %(message)s")
     prev = json.loads((DATA / "prices.json").read_text(encoding="utf-8")) if (DATA / "prices.json").exists() else {}
     prev_items = {i["id"]: i for i in prev.get("items", [])}
@@ -69,21 +78,26 @@ def main() -> int:
             log.exception("%s bulk failed: %s", r, e)
             bulk[r], bulk_stats[r] = [], {"error": str(e)}
 
-    threads = [threading.Thread(target=do_bulk, args=(r,), name=r) for r in ("checkers", "shoprite")]
-    for t in threads:
-        t.start()
+    if pnp_only:
+        bulk, bulk_stats = _load_bulk(prev)
+    else:
+        threads = [threading.Thread(target=do_bulk, args=(r,), name=r) for r in ("checkers", "shoprite")]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        BULK_CACHE.write_text(json.dumps({"day": now()[:10], "bulk": bulk, "stats": bulk_stats},
+                                         separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
 
     # ---- 2. Build the product list from what Checkers/Shoprite returned (falls back to last run's list)
-    for t in threads:
-        t.join()
     items: dict[str, dict] = {}
     alias: dict[str, str] = {}  # any barcode -> canonical id
     for r in ("checkers", "shoprite"):
         for rec in bulk.get(r, []):
             cid = next((alias[b] for b in rec["barcodes"] if b in alias), rec["barcode"])
             it = items.setdefault(cid, {"id": cid, "name": rec["name"], "brand": rec.get("brand"),
-                                        "category": label(rec["department"]), "dept": rec["department"],
-                                        "barcodes": set(), "prices": {}})
+                                        "category": rec.get("category") or label(rec.get("department") or "other"),
+                                        "dept": rec.get("department"), "barcodes": set(), "prices": {}})
             it["barcodes"].update(rec["barcodes"])
             for b in rec["barcodes"]:
                 alias[b] = cid
@@ -99,24 +113,34 @@ def main() -> int:
              for it in sorted(items.values(), key=prio)]
     pnp_budget = float(os.environ.get("BASKETWISE_PNP_BUDGET_MIN", "200"))
     pnp_stats = {}
-    try:
-        pnp_stats = run_pnp(cands, pnp_budget)
-    except Exception as e:
-        log.exception("pnp failed: %s", e)
-        pnp_stats = {"error": str(e)}
+    if no_pnp:
+        pnp_stats = {"window": False, "skipped": True}   # reported as "paused": the next step does PnP
+    else:
+        try:
+            pnp_stats = run_pnp(cands, pnp_budget)
+        except Exception as e:
+            log.exception("pnp failed: %s", e)
+            pnp_stats = {"error": str(e)}
 
-    # ---- 4. SPAR specials + Woolworths check
+    # ---- 4. SPAR specials + Woolworths check (done by the first step; --pnp-only keeps that result)
     f = Fetcher()
     spar = {}
-    try:
-        for rec in fetch_spar_specials(f):
-            # Regional specials only apply in that SPAR region; until regions are mapped to locations,
-            # use national specials only so we never show a price the shopper can't get.
-            if rec["region"] == "national":
-                spar[rec["barcode"]] = rec
-    except Exception as e:
-        log.exception("spar failed: %s", e)
-    ww_ok = bool(fetch_woolworths_category(f, "browse/food-south-africa/milk-dairy-eggs/milk"))
+    if pnp_only:
+        for it in prev_items.values():
+            p = (it.get("prices") or {}).get("spar")
+            if p and not p.get("stale"):
+                spar[it["id"]] = {**p, "barcode": it["id"]}
+        ww_ok = prev.get("retailers", {}).get("woolworths", {}).get("status") == "ok"
+    else:
+        try:
+            for rec in fetch_spar_specials(f):
+                # Regional specials only apply in that SPAR region; until regions are mapped to locations,
+                # use national specials only so we never show a price the shopper can't get.
+                if rec["region"] == "national":
+                    spar[rec["barcode"]] = rec
+        except Exception as e:
+            log.exception("spar failed: %s", e)
+        ww_ok = bool(fetch_woolworths_category(f, "browse/food-south-africa/milk-dairy-eggs/milk"))
 
     # ---- 5. Merge PnP + SPAR + carried-forward prices
     pmap = load_map()["products"]
@@ -160,10 +184,17 @@ def main() -> int:
     for r, meta in RETAILERS.items():
         fresh = sum(1 for i in out_items if r in i["prices"] and not i["prices"][r].get("stale"))
         anyp = sum(1 for i in out_items if r in i["prices"])
-        if r in ("checkers", "shoprite"):
+        if r in ("checkers", "shoprite") and bulk_stats.get(r, {}).get("from_previous"):
+            pr = prev.get("retailers", {}).get(r, {})
+            status, extra = pr.get("status", "partial"), {k: pr.get(k) for k in ("catalogue_size", "requests")}
+        elif r in ("checkers", "shoprite"):
             got, prev_n = len(bulk.get(r, [])), prev.get("retailers", {}).get(r, {}).get("catalogue_size", 0)
             status = "ok" if got and got >= 0.6 * max(prev_n, 1) else ("partial" if got else "unavailable")
             extra = {"catalogue_size": got, "requests": bulk_stats.get(r, {}).get("requests", 0)}
+        elif r == "pnp" and pnp_stats.get("skipped"):
+            pr = prev.get("retailers", {}).get("pnp", {})
+            status = "paused"
+            extra = {k: pr.get(k) for k in ("mapped", "index")} | {"refreshed": 0, "discovered": 0}
         elif r == "pnp":
             status = ("paused" if not pnp_stats.get("window") else
                       "ok" if pnp_stats.get("refreshed", 0) + pnp_stats.get("discovered", 0) else "unavailable")
@@ -208,6 +239,27 @@ def main() -> int:
         log.error("REGRESSION: %s stopped returning prices - scraper needs attention", regressions)
         return 1
     return 0
+
+
+def _load_bulk(prev: dict) -> tuple[dict, dict]:
+    """--pnp-only: today's Checkers/Shoprite results from the first step's cache, else rebuilt from the
+    saved prices (so a later hourly run can do just Pick n Pay)."""
+    if BULK_CACHE.exists():
+        try:
+            c = json.loads(BULK_CACHE.read_text(encoding="utf-8"))
+            if c.get("day") == now()[:10] and any(c.get("bulk", {}).values()):
+                return c["bulk"], c.get("stats", {})
+        except ValueError:
+            pass
+    bulk: dict[str, list] = {"checkers": [], "shoprite": []}
+    for it in prev.get("items", []):
+        for r in ("checkers", "shoprite"):
+            p = (it.get("prices") or {}).get(r)
+            if p and not p.get("stale"):
+                bulk[r].append({"retailer": r, "barcode": it["id"], "barcodes": [it["id"]], "name": it["name"],
+                                "brand": it.get("brand"), "category": it.get("category"), "department": None,
+                                **{k: v for k, v in p.items() if k != "stale"}})
+    return bulk, {r: {"from_previous": True} for r in bulk}
 
 
 def _resolve_index(slots: list[dict], out_items: list[dict]) -> list[dict]:

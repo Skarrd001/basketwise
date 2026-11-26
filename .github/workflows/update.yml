@@ -67,30 +67,51 @@ jobs:
         timeout-minutes: 15
         run: python stores.py
 
-      - name: Fetch today's prices
-        id: prices
-        if: steps.plan.outputs.skip != 'true'
+      # Step 1: Checkers + Shoprite (+ SPAR/Woolworths checks), saved straight away (~15 min).
+      - name: Prices - Checkers and Shoprite
+        id: cs
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.cs_done != 'true'
         working-directory: scraper
-        run: python run.py
+        run: python run.py --no-pnp
         continue-on-error: true
-        # Checkers + Shoprite take ~15 min; Pick n Pay then runs until its robots.txt window closes
-        # (08:45 UTC) or its budget is used, saving progress every 5 minutes.
-        timeout-minutes: 250
+        timeout-minutes: 60
         env:
-          BASKETWISE_BUDGET_MIN: "60"
-          BASKETWISE_PNP_BUDGET_MIN: "220"
+          BASKETWISE_BUDGET_MIN: "45"
 
-      - name: Data-quality tests
-        # only checks that guard the data; page-generation problems are handled at publish time
+      - name: Data-quality tests (step 1)
+        if: steps.cs.outcome == 'success' || steps.cs.outcome == 'failure'
+        id: test1
         run: python -m unittest -v tests.test_parsers tests.test_catalogue tests.test_ci
 
-      - name: Commit data
-        if: steps.plan.outputs.skip != 'true'
+      - name: Save Checkers and Shoprite
+        if: steps.test1.outcome == 'success'
+        continue-on-error: true
+        run: python scraper/ci.py commit
+
+      # Step 2: Pick n Pay, only inside its robots.txt window (06:00-10:45 SAST); saved separately, so a PC
+      # that drops off here loses only this step. Its matches are also saved locally every 5 minutes.
+      - name: Prices - Pick n Pay
+        id: pnp
+        if: steps.plan.outputs.skip != 'true' && steps.plan.outputs.pnp_needed == 'true'
+        working-directory: scraper
+        run: python run.py --pnp-only
+        continue-on-error: true
+        timeout-minutes: 250
+        env:
+          BASKETWISE_PNP_BUDGET_MIN: "220"
+
+      - name: Data-quality tests (step 2)
+        if: steps.pnp.outcome == 'success' || steps.pnp.outcome == 'failure'
+        id: test2
+        run: python -m unittest -v tests.test_parsers tests.test_catalogue tests.test_ci
+
+      - name: Save Pick n Pay
+        if: steps.test2.outcome == 'success'
         run: python scraper/ci.py commit
 
       - name: Fail loudly if a retailer broke
-        if: steps.prices.outcome == 'failure'
-        run: python scraper/ci.py fail "A retailer stopped returning prices. See the 'Fetch today's prices' log."
+        if: steps.cs.outcome == 'failure' || steps.pnp.outcome == 'failure'
+        run: python scraper/ci.py fail "A retailer stopped returning prices. See the price steps' logs."
 
   publish:
     needs: scrape
@@ -120,7 +141,7 @@ jobs:
           python3 -m pip install -q pillow
           python3 scraper/build_pages.py _site
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v4
         with:
           path: _site
 

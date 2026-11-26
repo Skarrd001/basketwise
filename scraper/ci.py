@@ -18,6 +18,25 @@ ROOT = Path(__file__).resolve().parent.parent
 PNP_WINDOW_UTC = (400, 845)  # Pick n Pay's robots.txt Visit-time
 
 
+def _today_status() -> tuple[bool, bool]:
+    """(Checkers+Shoprite saved today, Pick n Pay refreshed today) from the committed prices.json."""
+    import json
+    p = ROOT / "data" / "prices.json"
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False, False
+    if d.get("generated_at", "")[:10] != datetime.now(timezone.utc).strftime("%Y-%m-%d"):
+        return False, False
+    r = d.get("retailers", {})
+    cs = r.get("checkers", {}).get("status") == "ok" and r.get("shoprite", {}).get("status") == "ok"
+    return cs, r.get("pnp", {}).get("status") == "ok"
+
+
+def pnp_window_open() -> bool:
+    return PNP_WINDOW_UTC[0] <= int(datetime.now(timezone.utc).strftime("%H%M")) <= PNP_WINDOW_UTC[1]
+
+
 def already_done_today() -> bool:
     """A scheduled run is skipped if today's prices are already saved: Checkers/Shoprite refreshed today and
     Pick n Pay either refreshed today or no longer reachable today (its window has closed)."""
@@ -45,12 +64,17 @@ def plan() -> None:
     discover = dow == 7 or os.environ.get("IN_DISCOVER") == "true"
     # The schedule fires several times each morning (GitHub's cron can be hours late, and the PC may
     # wake late); later runs skip once the day's prices are in. Manual runs never skip.
-    skip = os.environ.get("GITHUB_EVENT_NAME") == "schedule" and already_done_today()
+    scheduled = os.environ.get("GITHUB_EVENT_NAME") == "schedule"
+    skip = scheduled and already_done_today()
     if skip:
         stores = discover = False
+    cs_today, pnp_today = _today_status()
+    cs_done = scheduled and cs_today                 # manual runs always refresh Checkers/Shoprite
+    pnp_needed = pnp_window_open() and not (scheduled and pnp_today)
+    b = lambda v: "true" if v else "false"  # noqa: E731
     out = os.environ.get("GITHUB_OUTPUT")
-    lines = (f"stores={'true' if stores else 'false'}\ndiscover={'true' if discover else 'false'}\n"
-             f"skip={'true' if skip else 'false'}\n")
+    lines = (f"stores={b(stores)}\ndiscover={b(discover)}\nskip={b(skip)}\n"
+             f"cs_done={b(cs_done)}\npnp_needed={b(pnp_needed)}\n")
     if out:
         with open(out, "a", encoding="utf-8") as fh:
             fh.write(lines)
@@ -68,7 +92,7 @@ def commit() -> None:
     if git("diff", "--cached", "--quiet", check=False).returncode == 0:
         print("no data changes")
         return
-    git("commit", "-m", f"data: prices {datetime.now(timezone.utc):%Y-%m-%d}")
+    git("commit", "-m", f"data: prices {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC")
     git("pull", "--rebase", "-q", "origin", "main")
     r = git("push", check=False)
     print(r.stdout, r.stderr)
