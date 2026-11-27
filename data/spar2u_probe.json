@@ -1,0 +1,78 @@
+{
+ "checked_at": "2026-11-27T14:45:23+00:00",
+ "requests": 8,
+ "hosts": [
+  {
+   "host": "https://www.spar2u.co.za",
+   "robots_status": 200,
+   "robots_txt": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/logo_sb_e309eab6ee.png\" fetchPriority=\"high\"/><link rel=\"preload\" href=\"/assets/cms/spar2u_bike_04abc343f7.svg\" as=\"image\" fetchPriority=\"high\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/spar2u_phone_fbfc4eaa9e.gif\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/rewards_card_activated_26f78131cb.png\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/present_your_card_at_checkout_2e84c39475.png\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/stay_connected_with_spar_70c7fc2c36.png\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/spar_bag_188ab83f17.svg\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/start_shopping_on_spar2u_c7a01c201d.png\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/Envelope_8b989d4bd2.webp\"/><script async=\"\" src=\"https://www.googletagmanager.com/gtag/js?id=G-LSZCQKSTTF\"></script><title>SPAR / SPAR2U</title><meta name=\"description\" content=\"Get your favourites delivered to your door\"/><meta name=\"og:image\" content=\"/assets/cms/spar2u_bike_04abc343f7.svg\"/><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"/><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin=\"anonymous\"/><link rel=\"icon\" href=\"/favicon.ico\"/><link rel=\"modulepreload\" href=\"/assets/entry.client-CtepPYlP.js\"/><link rel=\"modulepreload\" href=\"/assets/jsx-runtime-BIVXbzq-.js\"/><link rel=\"modulepreload\" href=\"/assets/index-DyoIa3OT.js\"/><link rel=\"modulepreload\" href=\"/assets/root-CelFv5p2.js\"/><link rel=\"modulepreload\" href=\"/assets/footer-BmxY3KFu.js\"/><link rel=\"modulepreload\" href=\"/assets/sub-content-CsCCwwdI.js\"/><link rel=\"modulepreload\" href=\"/assets/seo-HAgqZEXy.js\"/><link rel=\"modulepreload\" href=\"/assets/general-error-B5LIcnBZ.js\"/><link rel=\"modulepreload\" href=\"/assets/cookies-B6Hxtz2A.js\"/><link rel=\"modulepreload\" href=\"/assets/use-on-mount-action-BU4A1NWW.js\"/><link rel=\"modulepreload\" href=\"/assets/avatar-KHecOZZJ.js\"/><link rel=\"modulepreload\" href=\"/assets/strapi-image-BdAGzBDU.js\"/><link rel=\"modulepreload\" href=\"/assets/divider-vKEi3wz8.js\"/><link rel=\"modulepreload\" href=\"/assets/social-icon-CGvqk_HV.js\"/><link rel=\"modulepreload\" href=\"/assets/social-icon-lF-_hEHK.js\"/><link rel=\"modulepreload\" href=\"/assets/global-layout-Bu9fbamI.js\"/><link rel=\"modulepreload\" href=\"/assets/page-BL9dGgfU.js\"/><link rel=\"modulepreload\" href=\"/assets/seo-DPfa8yS-.js\"/><link rel=\"modulepreload\" href=\"/assets/page-template-B36LZeQw.js\"/><link rel=\"modulepreload\" href=\"/assets/contact-us-form-D5iIfPVp.js\"/><link rel=\"modulepreload\" href=\"/assets/tab-list-Bnh88KXr.js\"/><link rel=\"modulepreload\" href=\"/assets/mappers-BNYjId2P.js\"/><link rel=\"modulepreload\" href=\"/assets/dotted-carousel-navigation-Cv2cS3qH.js\"/><link rel=\"modulepreload\" href=\"/assets/media-cards-layout-CWNvOlP-.js\"/><link rel=\"modulepreload\" href=\"/assets/section-header-BjgCFkzr.js\"/",
+   "sitemaps_listed": [
+    "https://www.spar2u.co.za/sitemap.xml"
+   ],
+   "sitemap_urls": 0,
+   "product_like_urls": 0,
+   "product_url_samples": [],
+   "homepage": {
+    "url": "https://www.spar2u.co.za/",
+    "loaded": true,
+    "final_url": "https://www.spar.co.za/spar2u/",
+    "status": 200,
+    "bytes": 136969,
+    "login_redirect": false,
+    "prices_in_text": 0,
+    "price_fields_in_json": 0,
+    "sample_prices": []
+   }
+  },
+  {
+   "host": "https://spar2u.co.za",
+   "robots_status": 200,
+   "robots_txt": "<!DOCTYPE html><html lang=\"en\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/logo_sb_e309eab6ee.png\" fetchPriority=\"high\"/><link rel=\"preload\" href=\"/assets/cms/spar2u_bike_04abc343f7.svg\" as=\"image\" fetchPriority=\"high\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/spar2u_phone_fbfc4eaa9e.gif\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/rewards_card_activated_26f78131cb.png\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/present_your_card_at_checkout_2e84c39475.png\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/stay_connected_with_spar_70c7fc2c36.png\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/spar_bag_188ab83f17.svg\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/start_shopping_on_spar2u_c7a01c201d.png\"/><link rel=\"preload\" as=\"image\" href=\"/assets/cms/Envelope_8b989d4bd2.webp\"/><script async=\"\" src=\"https://www.googletagmanager.com/gtag/js?id=G-LSZCQKSTTF\"></script><title>SPAR / SPAR2U</title><meta name=\"description\" content=\"Get your favourites delivered to your door\"/><meta name=\"og:image\" content=\"/assets/cms/spar2u_bike_04abc343f7.svg\"/><link rel=\"preconnect\" href=\"https://fonts.googleapis.com\"/><link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin=\"anonymous\"/><link rel=\"icon\" href=\"/favicon.ico\"/><link rel=\"modulepreload\" href=\"/assets/entry.client-CtepPYlP.js\"/><link rel=\"modulepreload\" href=\"/assets/jsx-runtime-BIVXbzq-.js\"/><link rel=\"modulepreload\" href=\"/assets/index-DyoIa3OT.js\"/><link rel=\"modulepreload\" href=\"/assets/root-CelFv5p2.js\"/><link rel=\"modulepreload\" href=\"/assets/footer-BmxY3KFu.js\"/><link rel=\"modulepreload\" href=\"/assets/sub-content-CsCCwwdI.js\"/><link rel=\"modulepreload\" href=\"/assets/seo-HAgqZEXy.js\"/><link rel=\"modulepreload\" href=\"/assets/general-error-B5LIcnBZ.js\"/><link rel=\"modulepreload\" href=\"/assets/cookies-B6Hxtz2A.js\"/><link rel=\"modulepreload\" href=\"/assets/use-on-mount-action-BU4A1NWW.js\"/><link rel=\"modulepreload\" href=\"/assets/avatar-KHecOZZJ.js\"/><link rel=\"modulepreload\" href=\"/assets/strapi-image-BdAGzBDU.js\"/><link rel=\"modulepreload\" href=\"/assets/divider-vKEi3wz8.js\"/><link rel=\"modulepreload\" href=\"/assets/social-icon-CGvqk_HV.js\"/><link rel=\"modulepreload\" href=\"/assets/social-icon-lF-_hEHK.js\"/><link rel=\"modulepreload\" href=\"/assets/global-layout-Bu9fbamI.js\"/><link rel=\"modulepreload\" href=\"/assets/page-BL9dGgfU.js\"/><link rel=\"modulepreload\" href=\"/assets/seo-DPfa8yS-.js\"/><link rel=\"modulepreload\" href=\"/assets/page-template-B36LZeQw.js\"/><link rel=\"modulepreload\" href=\"/assets/contact-us-form-D5iIfPVp.js\"/><link rel=\"modulepreload\" href=\"/assets/tab-list-Bnh88KXr.js\"/><link rel=\"modulepreload\" href=\"/assets/mappers-BNYjId2P.js\"/><link rel=\"modulepreload\" href=\"/assets/dotted-carousel-navigation-Cv2cS3qH.js\"/><link rel=\"modulepreload\" href=\"/assets/media-cards-layout-CWNvOlP-.js\"/><link rel=\"modulepreload\" href=\"/assets/section-header-BjgCFkzr.js\"/",
+   "sitemaps_listed": [
+    "https://spar2u.co.za/sitemap.xml"
+   ],
+   "sitemap_urls": 0,
+   "product_like_urls": 0,
+   "product_url_samples": [],
+   "homepage": {
+    "url": "https://spar2u.co.za/",
+    "loaded": true,
+    "final_url": "https://www.spar.co.za/spar2u/",
+    "status": 200,
+    "bytes": 136969,
+    "login_redirect": false,
+    "prices_in_text": 0,
+    "price_fields_in_json": 0,
+    "sample_prices": []
+   }
+  },
+  {
+   "host": "https://www.spar.co.za",
+   "robots_status": 200,
+   "robots_txt": "User-agent: *\n\tDisallow: /cmsdesk/\nDisallow: /CMSSiteManager/\nDisallow: /store-finder\nDisallow: /store-finder/\nDisallow: /api/store-finder\nDisallow: */store-finder\nDisallow: */store-finder/\n\tAllow: /\n\tSitemap: https://www.spar.co.za/sitemap.xml",
+   "sitemaps_listed": [
+    "https://www.spar.co.za/sitemap.xml"
+   ],
+   "sitemap_urls": 256,
+   "product_like_urls": 0,
+   "product_url_samples": [],
+   "homepage": {
+    "url": "https://www.spar.co.za/",
+    "loaded": true,
+    "final_url": "https://www.spar.co.za/",
+    "status": 200,
+    "bytes": 134887,
+    "login_redirect": false,
+    "prices_in_text": 25,
+    "price_fields_in_json": 0,
+    "sample_prices": [
+     "R 10.00",
+     "R 48.00",
+     "R 15.00",
+     "R 89.99",
+     "R 35.00"
+    ]
+   }
+  }
+ ]
+}
