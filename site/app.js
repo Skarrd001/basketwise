@@ -16,7 +16,7 @@ const CHAINS = {
 };
 // Chains that don't publish machine-readable prices: we show the nearest store and their own specials page.
 const SPECIALS = {
-  spar: "https://www.spar.co.za/national-specials",
+  spar: "https://www.spar.co.za/region-and-national-specials",
   woolworths: "https://www.woolworths.co.za/browse/food/promotions-specials",
   usave: "https://www.usave.co.za/specials.html",
   ok: "https://www.okfoods.co.za/specials.html",
@@ -43,6 +43,9 @@ async function boot() {
     fetch("data/stores.json", { cache: "no-cache" }).then((r) => (r.ok ? r.json() : { stores: [] })).catch(() => ({ stores: [] })),
   ]);
   S.prices = prices;
+  // SPAR's weekly specials (optional file; the app works without it).
+  fetch("data/spar_specials.json", { cache: "no-cache" }).then((r) => (r.ok ? r.json() : null))
+    .then((j) => { S.spar = j; if (j && S.loc) render(); }).catch(() => {});
   S.byId = new Map(prices.items.map((i) => [i.id, i]));
   for (const it of prices.items) it._hay = (it.name + " " + (it.brand || "") + " " + (it.category || "")).toLowerCase();
   S.stores = stores.stores || [];
@@ -410,9 +413,15 @@ function render() {
     if (worst && worst !== bestSingle) html += `<p class="hint">Shopping at the best option instead of the most expensive saves <b>${R(worst.total - bestSingle.total)}</b> on this basket.</p>`;
   }
   html += otherStoresPanel(near, chains);
+  html += sparSpecialsPanel(nearAll);
   html += `<p class="disclaimer">Prices shown are the most recent we have on record and may not be 100% up to date at the time you shop. Where a price is older than today, its date is shown. Always check the price at the till.</p>`;
   res.innerHTML = html;
   if ($("geo2")) $("geo2").addEventListener("click", useGeolocation);
+  res.querySelectorAll("button[data-spar-add]").forEach((b) => b.addEventListener("click", () => {
+    const id = b.dataset.sparAdd;
+    S.basket[id] = (S.basket[id] || 0) + 1;
+    saveBasket();
+  }));
   updateSticky(shown[0], delivery);
 }
 
@@ -426,6 +435,34 @@ function updateSticky(best, delivery) {
   bar.innerHTML = `<span><b>${n} item${n === 1 ? "" : "s"}</b> · Cheapest: <b>${name} ${R(best.total)}</b> <small>${what}</small></span><button class="btn primary" id="sticky-go">See comparison</button>`;
   bar.hidden = false;
   $("sticky-go").addEventListener("click", () => $("step-results").scrollIntoView({ behavior: "smooth" }));
+}
+
+// SPAR publishes a handful of national specials as text (barcode in the image path). Shown as a list with the
+// same product's price at the other chains; those that match a catalogue product also count in basket totals.
+function sparSpecialsPanel(nearAll) {
+  const deals = ((S.spar && S.spar.specials) || []).filter((d) => d.region === "national");
+  const sp = nearAll && nearAll.spar;
+  if (!deals.length || !sp || sp.d > 25) return "";
+  const card = $("loyalty").checked;
+  const until = deals.find((d) => d.valid_until)?.valid_until;
+  // elsewhere: {chain: [shelf price, card price]}; compare like with like.
+  const best = (d) => Object.entries(d.elsewhere || {}).map(([c, v]) => [c, Array.isArray(v) ? v[card ? 1 : 0] : v])
+    .sort((a, b) => a[1] - b[1])[0];
+  const rows = deals.slice().sort((a, b) => (best(b) ? 1 : 0) - (best(a) ? 1 : 0)).map((d) => {
+    const price = card ? d.promo_price : d.price;
+    const other = best(d);
+    const cmp = other ? (other[1] < price - 0.005
+      ? ` <span class="sp-cmp">${CHAINS[other[0]].name} ${R(other[1])}</span>`
+      : ` <span class="sp-cmp good">cheaper than ${CHAINS[other[0]].name} (${R(other[1])})</span>`) : "";
+    const add = d.id && S.byId.has(d.id)
+      ? ` <button class="btn ghost sp-add" data-spar-add="${esc(d.id)}">${S.basket[d.id] ? "In basket ✓" : "Add"}</button>` : "";
+    return `<li><span><b>${esc(d.full_name || d.name)}</b><br><small>${esc(d.promo || "")}${d.in_store_only ? " · in store only" : ""}</small></span>` +
+      `<span class="sp-price">${R(price)}${d.multibuy_qty > 1 ? "<small> each</small>" : ""}${cmp}${add}</span></li>`;
+  }).join("");
+  return `<details class="others spar-deals"><summary><span class="dot" style="background:${CHAINS.spar.color}"></span> ` +
+    `<b>SPAR specials this week</b> (${deals.length})${until ? ` · until ${esc(until)}` : ""} · nearest SPAR ${sp.d.toFixed(1)} km</summary>` +
+    `<p class="hint">National specials from spar.co.za, ${card ? "with" : "without"} a SPAR Rewards card. SPAR stores are independently owned, so prices can differ by store; regional deals are in SPAR's leaflets. <a href="https://www.spar.co.za/region-and-national-specials" target="_blank" rel="noopener nofollow">SPAR's specials ↗</a></p>` +
+    `<ul>${rows}</ul></details>`;
 }
 
 function otherStoresPanel(near, pricedChains) {

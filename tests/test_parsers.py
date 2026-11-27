@@ -68,6 +68,35 @@ class TestSpar(unittest.TestCase):
         self.assertEqual(recs[0]["price"], 22.5)
 
 
+class TestSparCards(unittest.TestCase):
+    """SPAR's rebuilt site (2026-11) renders promotion cards as HTML; the image path holds the barcode."""
+    @staticmethod
+    def card(ean, title, size, price, label="", save="", rewards=True):
+        import base64
+        b64 = base64.b64encode(f"product_images/{ean}/{ean}-53-42-{ean}-209078186".encode()).decode().rstrip("=")
+        tag = (f'<div class="_tagsRow_18sj1_84"><img height="32" src="/rewards.png" alt=""/>'
+               f'<span class="_label_lx4ai_38">{save}</span></div>') if save else ""
+        lab = f'<span class="_priceLabel_18sj1_93">{label}</span>' if label else ""
+        return (f'<a class="_card_18sj1_1" href="/spar2u-app"><figure><img class="_media_18sj1_32" '
+                f'src="/assets/ingestion/api/cdn/images/{b64}" alt="{title}"/></figure><div>{tag}'
+                f'<span class="_title_18sj1_91">{title}</span><div class="_bodyCopy_18sj1_92">{size}</div>'
+                f'<div class="_priceSection_18sj1_141">{lab}<span class="_price_18sj1_93">{price}</span></div></div></a>')
+
+    def test_cards(self):
+        html = ("<p>Specials valid until [07 Dec].</p>"
+                + self.card("6001306000996", "Corn Flakes", "1 kg", "R 69.99", save="Save R 30.00")
+                + self.card("6009522310363", "Baked Beans", "400 g", "R 30.00", label="Buy Any 2 for")
+                + '<a class="_card_x_1" href="/x"><span class="_title_x_1">No barcode</span></a>')
+        recs = retailers.parse_spar_cards(html)
+        self.assertEqual([r["barcode"] for r in recs], ["6001306000996", "6009522310363"])
+        corn, beans = recs
+        self.assertEqual((corn["price"], corn["promo_price"]), (99.99, 69.99))  # shelf vs SPAR Rewards
+        self.assertIn("SPAR Rewards", corn["promo"])
+        self.assertEqual((beans["price"], beans["promo_price"], beans["multibuy_qty"]), (15.0, 15.0, 2))
+        self.assertEqual(corn["valid_until"], "07 Dec")
+        self.assertEqual(corn["name"], "Corn Flakes 1 kg")
+
+
 class TestSize(unittest.TestCase):
     def test_sizes(self):
         self.assertEqual(parse_size("Clover Milk 2L"), (2000, "ml"))

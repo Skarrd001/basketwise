@@ -6,6 +6,8 @@ Normalised price record:
 """
 from __future__ import annotations
 
+import base64
+from html import unescape
 import json
 import re
 from datetime import datetime, timezone
@@ -174,18 +176,85 @@ SPAR_PAGES = {"national": "national-specials", "EC": "regional-specials/EC", "KZ
 
 
 def fetch_spar_specials(f: Fetcher) -> list[dict]:
-    """SPAR is a franchise: each store sets its own shelf price and there is no online catalogue.
-    The only public prices are the national/provincial promotions, keyed by barcode."""
+    """SPAR stores are independent owners who set their own shelf prices, and there is no online catalogue.
+    The only public prices are the national and regional promotions on spar.co.za, keyed by barcode."""
     out: dict[tuple, dict] = {}
     for region, path in SPAR_PAGES.items():
         r = f.get(f"https://www.spar.co.za/{path}")
         if not r:
             continue
-        for rec in _parse_spar_flight(r.text):
+        recs = parse_spar_cards(r.text) or _parse_spar_flight(r.text)
+        for rec in recs:
             rec["region"] = region
             rec["url"] = f"https://www.spar.co.za/{path}"
             out[(rec["barcode"], rec["region"])] = rec
     return list(out.values())
+
+
+_SPAR_IMG = re.compile(r'src="[^"]*/images/([A-Za-z0-9+/=_-]{16,})"')
+_SPAR_VALID = re.compile(r"valid until\s*\[?([0-9]{1,2}\s+[A-Za-z]{3,9})\]?", re.I)
+
+
+def _cls_text(html: str, name: str) -> str | None:
+    """Text inside the first element whose CSS-module class starts with _<name>_ (the hash suffix changes)."""
+    m = re.search(r'class="_' + name + r'_[A-Za-z0-9]+_\d+[^"]*"[^>]*>(.*?)</(?:span|div)>', html, re.S)
+    if not m:
+        return None
+    return " ".join(unescape(re.sub(r"<[^>]+>", " ", m.group(1))).split()) or None
+
+
+def parse_spar_cards(html: str) -> list[dict]:
+    """Read the promotion cards SPAR's pages render as HTML. The product image path carries the barcode
+    (base64 of 'product_images/<EAN>/...'); we read only that path, never the image."""
+    valid = _SPAR_VALID.search(html)
+    valid_until = valid.group(1) if valid else None
+    out = []
+    for chunk in re.split(r'<a class="_card_', html)[1:]:
+        chunk = chunk.split("</a>", 1)[0]
+        m = _SPAR_IMG.search(chunk)
+        barcode = None
+        if m:
+            try:
+                path = base64.b64decode(m.group(1) + "=" * (-len(m.group(1)) % 4), altchars=b"-_").decode("ascii", "ignore")
+                bm = re.match(r"product_images/(\d{8,14})/", path)
+                barcode = bm.group(1) if bm else None
+            except (ValueError, UnicodeDecodeError):
+                barcode = None
+        title = _cls_text(chunk, "title")
+        size = _cls_text(chunk, "bodyCopy")
+        price_txt = _cls_text(chunk, "price")
+        label = _cls_text(chunk, "priceLabel") or ""
+        save = _cls_text(chunk, "label") or ""
+        pm = re.search(r"R\s?(\d+(?:[.,]\d{2})?)", price_txt or "")
+        if not (barcode and title and pm):
+            continue
+        total = float(pm.group(1).replace(",", "."))
+        qm = re.search(r"(?:any|buy)\s*(\d+)", label, re.I)
+        qty = int(qm.group(1)) if qm else 1
+        per_unit = round(total / qty, 2)
+        rewards = "rewards.png" in chunk
+        sm = re.search(r"R\s?(\d+(?:[.,]\d{2})?)", save)
+        saving = float(sm.group(1).replace(",", ".")) if sm else 0.0
+        name = f"{title} {size}".strip() if size else title
+        promo = (f"Buy any {qty} for R{total:.2f}" if qty > 1 else f"Special R{total:.2f}")
+        if saving:
+            promo += f", save R{saving:.2f}"
+        if rewards:
+            promo += " with SPAR Rewards"
+        # SPAR's 'Save R X' tags carry the Rewards logo: without the card you pay the usual price, which we
+        # take as special + saving (SPAR's own figure; each store sets its own shelf price).
+        card_unit = round(total / qty, 2)
+        shelf_unit = round((total + saving) / qty, 2) if (rewards and saving) else card_unit
+        out.append({
+            "retailer": "spar", "product_id": barcode, "barcode": barcode,
+            "name": name, "title": title, "size": size, "brand": None,
+            "price": shelf_unit, "regular_price": round((total + saving) / qty, 2) if saving else None,
+            "promo": promo, "promo_price": card_unit,
+            "multibuy_qty": qty, "multibuy_total": total, "rewards": rewards,
+            "in_store_only": "in store only" in chunk.lower(),
+            "valid_until": valid_until, "in_stock": True, "fetched_at": now(),
+        })
+    return out
 
 
 def _parse_spar_flight(html: str) -> list[dict]:

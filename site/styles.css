@@ -137,3 +137,11 @@ dialog.acct { position: fixed; }
 .sub-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .sub-row input { flex: 1 1 220px; padding: 9px 11px; border-radius: 9px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font: inherit; }
 .sub-consent { display: flex; gap: 8px; align-items: flex-start; font-size: .82rem; color: var(--muted); margin-top: 8px; }
+
+.spar-deals { margin-top: 14px; }
+.spar-deals summary { cursor: pointer; font-size: .95rem; padding: 6px 0; }
+.spar-deals li { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; padding: 6px 0; border-top: 1px solid var(--line, #e5e7eb); }
+.spar-deals .sp-price { text-align: right; white-space: nowrap; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.spar-deals .sp-cmp { font-size: .78rem; color: var(--muted, #6b7280); }
+.spar-deals .sp-cmp.good { color: #15803d; }
+.spar-deals .sp-add { padding: 2px 10px; font-size: .8rem; }

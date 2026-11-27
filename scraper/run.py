@@ -2,7 +2,7 @@
 
   Checkers + Shoprite - whole grocery range via the category listing endpoint (100 products/request)
   Pick n Pay          - rolling: refresh oldest prices + match new barcodes, inside its robots.txt window
-  SPAR                - national specials, matched by barcode
+  SPAR                - national specials from spar.co.za cards, matched by barcode
   Woolworths          - one honest attempt (they block bots; we don't bypass that)
 
 The three big retailers run in parallel threads (different sites, each with its own polite delay).
@@ -36,7 +36,7 @@ RETAILER_NOTES = {
     "shoprite": "Online price, refreshed daily. Xtra Savings card deals shown separately.",
     "pnp": "Online price for PnP's default pricing region. PnP allows one request every 10 seconds, early mornings only, so prices refresh on a rolling basis and each shows its date. Coverage grows every day.",
     "woolworths": "Not available: woolworths.co.za blocks automated access. We do not bypass this.",
-    "spar": "SPAR stores set their own prices and SPAR publishes its specials only as leaflet images, so we can't price your basket there. See SPAR's specials page.",
+    "spar": "SPAR stores are independently owned and set their own prices; there is no online catalogue. We show SPAR's national specials (published as text on spar.co.za) and use them in basket totals where the barcode matches. Regional deals are in leaflets only.",
 }
 STAPLES = ["milk-dairy-and-eggs", "bakery", "food-cupboard", "household-and-cleaning", "toiletries",
            "beverages-juices-and-cordials", "coffee-tea-and-hot-drinks", "frozen-foods", "baby",
@@ -125,6 +125,7 @@ def main(argv: list[str] | None = None) -> int:
     # ---- 4. SPAR specials + Woolworths check (done by the first step; --pnp-only keeps that result)
     f = Fetcher()
     spar = {}
+    spar_all: list[dict] = []
     if pnp_only:
         for it in prev_items.values():
             p = (it.get("prices") or {}).get("spar")
@@ -133,9 +134,9 @@ def main(argv: list[str] | None = None) -> int:
         ww_ok = prev.get("retailers", {}).get("woolworths", {}).get("status") == "ok"
     else:
         try:
-            for rec in fetch_spar_specials(f):
-                # Regional specials only apply in that SPAR region; until regions are mapped to locations,
-                # use national specials only so we never show a price the shopper can't get.
+            spar_all = fetch_spar_specials(f)
+            for rec in spar_all:
+                # Regional specials only apply in that SPAR region, so only national ones enter basket totals.
                 if rec["region"] == "national":
                     spar[rec["barcode"]] = rec
         except Exception as e:
@@ -157,7 +158,7 @@ def main(argv: list[str] | None = None) -> int:
                                            **({"stale": True} if (e.get("fetched_at") or "")[:10] != today else {})}
     for it in items.values():
         hit = next((spar[b] for b in it["barcodes"] if b in spar), None)
-        if hit:
+        if hit and _plausible(hit, it):
             it["prices"]["spar"] = _slim(hit)
     # Checkers/Shoprite products missing from today's list (a failed fetch, or dropped off the online
     # listing for a day) keep their last price, dated, for up to a week (KEEP_DAYS if the whole fetch failed).
@@ -212,6 +213,8 @@ def main(argv: list[str] | None = None) -> int:
            "preset": [{"id": p["barcode"], "qty": p["qty"]} for p in preset],
            "index": _resolve_index(index_slots, out_items), "items": out_items}
     DATA.mkdir(exist_ok=True)
+    if spar_all:
+        _write_spar_specials(spar_all, items, alias)
     (DATA / "prices.json").write_text(json.dumps(doc, separators=(",", ":"), ensure_ascii=False), encoding="utf-8")
 
     # History: the reference (preset) basket only, so the repo stays small.
@@ -291,6 +294,44 @@ def _write_trends(hist, data_dir, days: int = 90) -> None:
         for r, t in totals.items():
             series.setdefault(r, []).append({"date": fp.stem, "total": round(t, 2), "items": counts[r]})
     (data_dir / "trends.json").write_text(json.dumps({"dates": dates, "series": series}, separators=(",", ":")))
+
+
+def _plausible(hit: dict, it: dict) -> bool:
+    """A SPAR special keyed by a single unit's barcode can be priced for a multipack (e.g. '1 L' milk at
+    R89.99 is a 6-pack). Keep it out of basket totals unless it's in line with the other chains."""
+    others = [p["price"] for r, p in it["prices"].items() if r != "spar" and p.get("price")]
+    if not others:
+        return True
+    ratio = hit["price"] / min(others)
+    if 0.4 <= ratio <= 2.5:
+        return True
+    log.info("spar: %s R%.2f vs R%.2f elsewhere looks like a different pack size - kept out of totals",
+             hit.get("name"), hit["price"], min(others))
+    return False
+
+
+def _write_spar_specials(recs: list[dict], items: dict, alias: dict) -> None:
+    """data/spar_specials.json: every SPAR special as a list for the app, with the same product's price at
+    the other chains where the barcode matches. Regional cards that repeat a national one are dropped."""
+    national = {r["barcode"] for r in recs if r["region"] == "national"}
+    out = []
+    for r in sorted(recs, key=lambda r: (r["region"] != "national", r["region"], r["name"] or "")):
+        if r["region"] != "national" and r["barcode"] in national:
+            continue
+        it = items.get(alias.get(r["barcode"], r["barcode"]))
+        elsewhere = {}
+        if it:
+            for c, p in it["prices"].items():
+                if c != "spar" and p.get("price"):
+                    elsewhere[c] = [p["price"], min(p["price"], p.get("promo_price") or p["price"])]
+        out.append({k: r.get(k) for k in ("region", "barcode", "name", "price", "promo_price", "promo",
+                                           "multibuy_qty", "rewards", "in_store_only", "valid_until", "url")}
+                   | {"id": it["id"] if it else None, "full_name": it["name"] if it else None,
+                      "in_totals": bool(it and "spar" in it["prices"]), "elsewhere": elsewhere})
+    (DATA / "spar_specials.json").write_text(json.dumps(
+        {"fetched_at": now(), "count": len(out), "specials": out}, separators=(",", ":"), ensure_ascii=False),
+        encoding="utf-8")
+    log.info("spar: %d specials saved (%d national)", len(out), sum(1 for o in out if o["region"] == "national"))
 
 
 def _slim(rec: dict) -> dict:

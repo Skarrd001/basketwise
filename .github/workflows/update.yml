@@ -19,7 +19,7 @@ on:
   # App/page changes publish straight away on GitHub's servers, without waiting for the PC to scrape.
   push:
     branches: [main]
-    paths: ["site/**", "scraper/build_pages.py", "data/prices.json", "scraper/index_basket.json"]
+    paths: ["site/**", "scraper/build_pages.py", "data/prices.json", "data/spar_specials.json", "scraper/index_basket.json"]
   workflow_dispatch:
     inputs:
       stores:
@@ -148,6 +148,7 @@ jobs:
           cp data/prices.json _site/data/
           [ -f data/trends.json ] && cp data/trends.json _site/data/ || true
           [ -f data/stores.json ] && cp data/stores.json _site/data/ || true
+          [ -f data/spar_specials.json ] && cp data/spar_specials.json _site/data/ || true
 
       - name: Build SEO product pages, weekly post and sitemap
         continue-on-error: true   # a page-generation problem must never block publishing the app
