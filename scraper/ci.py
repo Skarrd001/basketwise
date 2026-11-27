@@ -83,12 +83,25 @@ def plan() -> None:
 
 
 def git(*args: str, check: bool = True) -> subprocess.CompletedProcess:
-    return subprocess.run(["git", *args], cwd=ROOT, check=check, text=True, capture_output=True)
+    r = subprocess.run(["git", *args], cwd=ROOT, text=True, capture_output=True)
+    if check and r.returncode:
+        # Show git's own message in the log; a bare CalledProcessError hides it.
+        print(f"git {' '.join(args)} failed ({r.returncode}):\n{r.stdout}\n{r.stderr}")
+        r.check_returncode()
+    return r
 
 
 def commit() -> None:
     git("config", "user.name", "basketwise-bot")
     git("config", "user.email", "basketwise-bot@users.noreply.github.com")
+    # A run killed mid-rebase (PC slept, runner restarted) leaves a rebase in progress that blocks every
+    # later pull ("fatal: ... rebase-merge directory"). Clear it before committing.
+    git_dir = Path(git("rev-parse", "--git-dir").stdout.strip())
+    if not git_dir.is_absolute():
+        git_dir = ROOT / git_dir
+    if (git_dir / "rebase-merge").exists() or (git_dir / "rebase-apply").exists():
+        print("clearing a rebase left over from an interrupted run")
+        git("rebase", "--abort", check=False)
     git("add", "data")
     if git("diff", "--cached", "--quiet", check=False).returncode == 0:
         print("no data changes")

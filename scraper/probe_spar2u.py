@@ -96,6 +96,8 @@ def main() -> None:
            "requests": f.requests_made, "hosts": hosts}
     OUT.write_text(json.dumps(out, indent=1, ensure_ascii=False))
     for h in hosts:
+        print(f"--- {h['host']} robots.txt ---\n{h.get('robots_txt', '')[:1500]}")
+        print(f"homepage: {h.get('homepage')}")
         pp = h.get("product_page") or {}
         log.info("spar-probe %s: robots %s, %s sitemap URLs (%s product-like), product page loaded=%s, "
                  "prices=%s/%s", h["host"], h.get("robots_status"), h.get("sitemap_urls"),
