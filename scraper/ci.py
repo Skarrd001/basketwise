@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 from datetime import datetime, timezone
@@ -94,25 +95,44 @@ def git(*args: str, check: bool = True) -> subprocess.CompletedProcess:
 def commit() -> None:
     git("config", "user.name", "basketwise-bot")
     git("config", "user.email", "basketwise-bot@users.noreply.github.com")
-    # A run killed mid-rebase (PC slept, runner restarted) leaves a rebase in progress that blocks every
-    # later pull ("fatal: ... rebase-merge directory"). Clear it before committing.
+    # A run killed or failed mid-rebase leaves rebase state in .git that actions/checkout doesn't remove, and
+    # it breaks every later pull. --quit drops that state but keeps the fresh checkout (--abort would bring
+    # back the old run's unpushed commit and conflict again).
     git_dir = Path(git("rev-parse", "--git-dir").stdout.strip())
     if not git_dir.is_absolute():
         git_dir = ROOT / git_dir
     if (git_dir / "rebase-merge").exists() or (git_dir / "rebase-apply").exists():
-        print("clearing a rebase left over from an interrupted run")
-        git("rebase", "--abort", check=False)
+        print("clearing a rebase left over from an earlier run")
+        git("rebase", "--quit", check=False)
     git("add", "data")
     if git("diff", "--cached", "--quiet", check=False).returncode == 0:
         print("no data changes")
         return
-    git("commit", "-m", f"data: prices {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC")
-    git("pull", "--rebase", "-q", "origin", "main")
+    msg = f"data: prices {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC"
+    git("commit", "-m", msg)
+    if git("pull", "--rebase", "-q", "origin", "main", check=False).returncode:
+        # Someone else pushed data since this run checked out. Never leave a half-done rebase behind:
+        # this run's files are the newest scrape, so they win whole (never a line-by-line JSON mix);
+        # files only the other side changed are kept.
+        print("data conflict with a newer push: keeping this run's files")
+        git("rebase", "--abort", check=False)
+        keep = Path(os.environ.get("RUNNER_TEMP", ROOT.parent)) / "bw_data_keep"
+        if keep.exists():
+            shutil.rmtree(keep)
+        shutil.copytree(ROOT / "data", keep)
+        git("fetch", "-q", "origin", "main")
+        git("reset", "-q", "--hard", "origin/main")
+        shutil.copytree(keep, ROOT / "data", dirs_exist_ok=True)
+        shutil.rmtree(keep, ignore_errors=True)
+        git("add", "data")
+        if git("diff", "--cached", "--quiet", check=False).returncode == 0:
+            print("no data changes after syncing")
+            return
+        git("commit", "-m", msg)
     r = git("push", check=False)
     print(r.stdout, r.stderr)
     if r.returncode:
         sys.exit(r.returncode)
-
 
 if __name__ == "__main__":
     cmd = sys.argv[1] if len(sys.argv) > 1 else ""
