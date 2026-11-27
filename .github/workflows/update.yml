@@ -26,6 +26,10 @@ on:
         description: "Refresh store locations (normally Mondays)"
         type: boolean
         default: false
+      auto:
+        description: "Started by the PC's daily timer: skip work already done today (like a scheduled run)"
+        type: boolean
+        default: false
       publish_only:
         description: "Just rebuild and publish the site from saved data (no scraping, PC not needed)"
         type: boolean
@@ -58,6 +62,7 @@ jobs:
         id: plan
         env:
           IN_STORES: ${{ inputs.stores }}
+          IN_AUTO: ${{ inputs.auto }}
         run: python scraper/ci.py plan
 
       - name: Refresh store locations (Mondays)

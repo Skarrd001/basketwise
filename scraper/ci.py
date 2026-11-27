@@ -64,7 +64,8 @@ def plan() -> None:
     discover = dow == 7 or os.environ.get("IN_DISCOVER") == "true"
     # The schedule fires several times each morning (GitHub's cron can be hours late, and the PC may
     # wake late); later runs skip once the day's prices are in. Manual runs never skip.
-    scheduled = os.environ.get("GITHUB_EVENT_NAME") == "schedule"
+    # The PC's own morning timer starts runs with auto=true; treat them like scheduled runs.
+    scheduled = os.environ.get("GITHUB_EVENT_NAME") == "schedule" or os.environ.get("IN_AUTO") == "true"
     skip = scheduled and already_done_today()
     if skip:
         stores = discover = False
