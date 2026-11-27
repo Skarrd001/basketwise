@@ -72,6 +72,15 @@ jobs:
         timeout-minutes: 15
         run: python stores.py
 
+      # One-off: does SPAR/SPAR2U publish prices we may read? Runs only until data/spar2u_probe.json exists.
+      - name: Check SPAR2U (one-off)
+        if: hashFiles('data/spar2u_probe.json') == ''
+        continue-on-error: true
+        timeout-minutes: 10
+        run: |
+          python scraper/probe_spar2u.py
+          python scraper/ci.py commit
+
       # Step 1: Checkers + Shoprite (+ SPAR/Woolworths checks), saved straight away (~15 min).
       - name: Prices - Checkers and Shoprite
         id: cs
