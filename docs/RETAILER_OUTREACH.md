@@ -91,7 +91,7 @@ Sources: [Shoprite PAIA manual](https://cdn.prod.website-files.com/61108ec55659c
 | Shoprite Holdings | 2026-11-24 | cosec@shoprite.co.za | | Delivered (no bounce). Follow up 2026-12-08; also phone 021 980 4000 |
 | ShopriteX (partner form) | 2026-11-24 | shopritex.co.za partner form, with pitch PDF | | Submitted. **Reference SRX-22627767.** Category: partnership; eCommerce & Delivery, co-innovation, Core Retail Platform |
 | Pick n Pay Stores | 2026-11-24 | companysecretary@pnp.co.za, cc customercare@pnp.co.za | | Delivered (no bounce). Follow up 2026-12-08 |
-| The SPAR Group | 2026-11-24 | intcontact@spar.co.za | | cc Nonganga@spar.co.za **bounced** (address rejected). Main address delivered |
+| The SPAR Group | 2026-11-24 | intcontact@spar.co.za | 2026-11-27, Glenda Turpin (Customer Care), WebsiteContacts@spar.co.za | Customer care, not digital. Corrected us: SPAR stores are independent voluntary traders, not franchises; prices and Rewards deals vary by store and province. No yes or no. Reply drafted (not sent) asking for the SPAR2U/digital team, or whether the Group objects to owners opting in individually |
 | Woolworths Holdings | 2026-11-24 | pressoffice@woolworths.co.za | | Delivered (no bounce) |
 | Food Lover's Market | 2026-11-24 | care@fnv.co.za | | Delivered (no bounce) |
 | Massmart (Makro) | 2026-11-24 | mediaenquiries@massmart.co.za, cc info@makro.co.za | | First send went to the address without the dot. **Resent 2026-11-24 to media.enquiries@massmart.co.za** (plain link, full signature); no bounce |
